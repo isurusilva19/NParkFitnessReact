@@ -263,6 +263,7 @@ const CustomerPayment = () => {
                         </Grid>
                     </Grid>
                     <Grid container justifyContent="center" alignItems="center" direction="column" xs={12} sm={6} md={6} lg={6}>
+                        <div style={{ height: '20px' }} />
                         <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
                             <CreditCardIcon sx={{ color: '#7E7676' }} />
                             <div style={{ width: '20px' }} />
