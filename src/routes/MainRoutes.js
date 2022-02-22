@@ -10,6 +10,7 @@ const DashboardOwner = Loadable(lazy(() => import('views/dashboard/owner-dashboa
 const DashboardManager = Loadable(lazy(() => import('views/dashboard/manager-dashboard/ManagerDashboard')));
 
 const CustomerPayment = Loadable(lazy(() => import('views/pages/customer-payment/CustomerPayment')));
+const Subscription = Loadable(lazy(() => import('views/pages/subscription/Subscription')));
 
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
@@ -46,6 +47,10 @@ const MainRoutes = {
         {
             path: '/pages/customerPayment',
             element: <CustomerPayment />
+        },
+        {
+            path: '/pages/subscription',
+            element: <Subscription />
         },
         {
             path: '/utils/util-typography',
