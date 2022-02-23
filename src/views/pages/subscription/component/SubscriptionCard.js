@@ -64,9 +64,16 @@ const useStyles = makeStyles((theme) => ({
 
 // ===========================|| PROFILE MENU - UPGRADE PLAN CARD ||=========================== //
 
-const SubscriptionCard = () => {
+const SubscriptionCard = (subscriptionData) => {
     const classes = useStyles();
-
+    console.log(subscriptionData);
+    console.log(subscriptionData.subscriptionData.id);
+    let status;
+    if (subscriptionData.subscriptionData.isActive) {
+        status = 'Active';
+    } else {
+        status = 'InsActive';
+    }
     return (
         <Card className={classes.card}>
             <CardContent justifyContent="center" alignItems="center">
@@ -78,7 +85,7 @@ const SubscriptionCard = () => {
                             Subscription
                         </Typography>
                         <Typography align="left" variant="subtitle1" style={{ maxWidth: '100px', minWidth: '110px' }}>
-                            Gold Plan
+                            {subscriptionData !== null ? subscriptionData.subscriptionData.subscriptionType.type : 'NotFound'}
                         </Typography>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'left', margin: '5px' }}>
@@ -88,7 +95,7 @@ const SubscriptionCard = () => {
                             Expire Date
                         </Typography>
                         <Typography align="left" variant="subtitle1" style={{ maxWidth: '100px', minWidth: '110px' }}>
-                            2022-03-12
+                            {subscriptionData !== null ? subscriptionData.subscriptionData.expireDate : 'NotFound'}
                         </Typography>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -98,7 +105,7 @@ const SubscriptionCard = () => {
                             Status
                         </Typography>
                         <Typography align="left" variant="subtitle1" style={{ maxWidth: '100px', minWidth: '110px' }}>
-                            Active
+                            {subscriptionData !== null ? status : 'NotFound'}
                         </Typography>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -108,7 +115,7 @@ const SubscriptionCard = () => {
                             Amount
                         </Typography>
                         <Typography align="left" variant="subtitle1" style={{ maxWidth: '100px', minWidth: '110px' }}>
-                            Rs 2500.00
+                            {subscriptionData !== null ? subscriptionData.subscriptionData.subscriptionType.amount : 'NotFound'}
                         </Typography>
                     </div>
                 </Grid>

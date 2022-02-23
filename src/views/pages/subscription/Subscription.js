@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // material-ui
 import { makeStyles, useTheme, withStyles } from '@material-ui/styles';
@@ -39,12 +39,26 @@ import {
     IconReportAnalytics,
     IconReceipt
 } from '@tabler/icons';
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Autocomplete, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
+import HttpCommon from 'utils/http-common';
+import { useNavigate } from 'react-router-dom';
 // project imports
 import AnimateButton from 'ui-component/extended/AnimateButton';
+
+import { Payhere, AccountCategory, Customer, CurrencyType, PayhereCheckout, CheckoutParams } from 'payhere-js-sdk';
+
 //= ==============================|| SHADOW BOX ||===============================//
 let theme;
+
+// Sandbox
+Payhere.init('1217402', AccountCategory.SANDBOX);
+
+// Live
+// Payhere.init("12xxxxx",AccountCategory.LIVE)
+
+// Visa card
+// Visa : 4916217501611292
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -198,10 +212,48 @@ const ActivityCard = () => {
 const Subscription = () => {
     const classes = useStyles();
     const [plan, setPlan] = React.useState('');
+    const [subscription, setSubscription] = React.useState(null);
+    const [subscriptionTypes, setSubscriptionTypes] = React.useState(null);
+    const [menuItems, setMenuItems] = React.useState([]);
+    const navigate = useNavigate();
+    const ownerName = 'Saman';
 
-    const handleChange = (event) => {
-        setPlan(event.target.value);
+    function getSubscriptionTypes() {
+        // let arr = [];
+        HttpCommon.get('/api/subscriptionType/').then((response) => {
+            console.log(response.data.data);
+            setSubscriptionTypes(response.data.data);
+            response.data.data.forEach((element) => {
+                menuItems.push({ label: element.type, value: element });
+            });
+        });
+    }
+
+    useEffect(async () => {
+        // getData();
+        // console.log("token = " + token);
+        // const config = {
+        //     headers: { Authorization: `Bearer ${token}` }
+        // };
+        // if (token != null) {
+        HttpCommon.get('/api/subscription/getSubscriptionByUserId/1').then((response) => {
+            console.log(response.data.data);
+            console.log(response.data.data.isActive);
+            setSubscription(response.data.data);
+        });
+        getSubscriptionTypes();
+        // } else {
+        //     // navigate('/home')
+        // }
+    }, []);
+
+    const handleChangePlan = (event, value) => {
+        console.log(value);
+        if (value !== null) {
+            setPlan(value.value);
+        }
     };
+
     return (
         <Grid spacing={gridSpacing}>
             {/* bgcolor: 'secondary.main', */}
@@ -216,72 +268,76 @@ const Subscription = () => {
                                 minWidth: '400px'
                             }}
                         >
-                            <SubscriptionCard />
+                            {subscription !== null ? <SubscriptionCard subscriptionData={subscription} /> : <></>}
                         </div>
                     </Grid>
-                    <Grid
-                        style={{ paddingLeft: '150px' }}
-                        container
-                        justifyContent="center"
-                        alignItems="center"
-                        direction="column"
-                        xs={12}
-                        sm={12}
-                        md={12}
-                        lg={6}
-                    >
-                        <div style={{ height: '20px' }} />
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <IconBuildingCommunity color="black" />
-                            <div style={{ width: '20px' }} />
-                            <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                Gym Count Available
-                            </MuiTypography>
-                            <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                2
-                            </MuiTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <IconBuildingArch color="black" />
-                            <div style={{ width: '20px' }} />
-                            <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                Branch Count Available
-                            </MuiTypography>
-                            <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                3
-                            </MuiTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <IconBrandTinder color="black" />
-                            <div style={{ width: '20px' }} />
-                            <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                Calorie Calculator
-                            </MuiTypography>
-                            <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                Available
-                            </MuiTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <IconToolsKitchen2 color="black" />
-                            <div style={{ width: '20px' }} />
-                            <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                Diet Plan
-                            </MuiTypography>
-                            <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                Not Available
-                            </MuiTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <IconListCheck color="black" />
-                            <div style={{ width: '20px' }} />
-                            <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                Plan Description
-                            </MuiTypography>
-                            <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                This is a Description about Gold plan
-                            </MuiTypography>
-                        </div>
-                    </Grid>
+                    {subscription !== null ? (
+                        <Grid
+                            style={{ paddingLeft: '150px' }}
+                            container
+                            justifyContent="center"
+                            alignItems="center"
+                            direction="column"
+                            xs={12}
+                            sm={12}
+                            md={12}
+                            lg={6}
+                        >
+                            <div style={{ height: '20px' }} />
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <IconBuildingCommunity color="black" />
+                                <div style={{ width: '20px' }} />
+                                <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
+                                    Gym Count Available
+                                </MuiTypography>
+                                <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
+                                    {subscription.subscriptionType.gymCount}
+                                </MuiTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <IconBuildingArch color="black" />
+                                <div style={{ width: '20px' }} />
+                                <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
+                                    Branch Count Available
+                                </MuiTypography>
+                                <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
+                                    {subscription.subscriptionType.branchCount}
+                                </MuiTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <IconBrandTinder color="black" />
+                                <div style={{ width: '20px' }} />
+                                <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
+                                    Calorie Calculator
+                                </MuiTypography>
+                                <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
+                                    {subscription.subscriptionType.isCalAvailable ? 'Available' : 'Not Available'}
+                                </MuiTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <IconToolsKitchen2 color="black" />
+                                <div style={{ width: '20px' }} />
+                                <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
+                                    Diet Plan
+                                </MuiTypography>
+                                <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
+                                    {subscription.subscriptionType.isDietAvailable ? 'Available' : 'Not Available'}
+                                </MuiTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <IconListCheck color="black" />
+                                <div style={{ width: '20px' }} />
+                                <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
+                                    Plan Description
+                                </MuiTypography>
+                                <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
+                                    {subscription.subscriptionType.description}
+                                </MuiTypography>
+                            </div>
+                        </Grid>
+                    ) : (
+                        <></>
+                    )}
                 </Grid>
             </SubCard>
             <div style={{ height: '20px' }} />
@@ -296,25 +352,65 @@ const Subscription = () => {
                                 minWidth: '400px'
                             }}
                         >
-                            <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">Subscription Plan</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={plan}
-                                    label="Subscription Plan"
-                                    onChange={handleChange}
-                                >
-                                    <MenuItem value={10}>Gold</MenuItem>
-                                    <MenuItem value={20}>Silver</MenuItem>
-                                    <MenuItem value={30}>Platinum</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <AnimateButton>
+                            <Autocomplete
+                                disablePortal
+                                id="combo-box-demo"
+                                options={menuItems}
+                                sx={{ width: 300 }}
+                                renderInput={(params) => <TextField {...params} label="Subscription Plan" />}
+                                onChange={handleChangePlan}
+                            />
+                            <form method="post" action="https://sandbox.payhere.lk/pay/checkout">
+                                <div style={{ display: 'none' }}>
+                                    <input type="hidden" name="merchant_id" value="1217402" />
+                                    <input type="hidden" name="return_url" value="http://localhost:3000/pages/paymentSuccess" />
+                                    <input type="hidden" name="cancel_url" value="http://localhost:3000/pages/subscription" />
+                                    <input type="hidden" name="notify_url" value="http://localhost:3005/api/payment/notifyPayment" />
+                                    <br />
+                                    <br />
+                                    Item Details
+                                    <br />
+                                    <input type="hidden" name="order_id" value="65321" />
+                                    <input type="hidden" name="items" value="NParkFitness Monthly Subscription Payment" />
+                                    <br />
+                                    <input type="hidden" name="currency" value="LKR" />
+                                    <input type="hidden" name="amount" value={plan.amount} />
+                                    <br />
+                                    <br />
+                                    Customer Details
+                                    <br />
+                                    <input type="hidden" name="first_name" value={ownerName} />
+                                    <input type="hidden" name="last_name" value="" />
+                                    <br />
+                                    <input type="hidden" name="email" value="" />
+                                    <input type="hidden" name="phone" value="" />
+                                    <br />
+                                    <input type="hidden" name="address" value="{JSON.stringify(props.centers)}" />
+                                    <input type="hidden" name="city" value="" />
+                                    <input type="hidden" name="country" value="" />
+                                    <input type="hidden" name="custom_1" value="{JSON.stringify(props.centers)}" />
+                                    <br />
+                                    <br />
+                                    {/* <input type="submit" value="Buy Now" /> */}
+                                </div>
+                                {plan.amount < 1 || plan.amount == null ? (
+                                    <></>
+                                ) : (
+                                    <AnimateButton>
+                                        <Button type="submit" variant="contained" className={classes.button}>
+                                            Renew Plan
+                                        </Button>
+                                    </AnimateButton>
+                                    // <ButtonMaterial type="submit" variant="contained" className={classes.buttonMaterial2}>
+                                    //     Payment
+                                    // </ButtonMaterial>
+                                )}
+                            </form>
+                            {/* <AnimateButton>
                                 <Button variant="contained" className={classes.button}>
                                     Renew Plan
                                 </Button>
-                            </AnimateButton>
+                            </AnimateButton> */}
                         </div>
                     </Grid>
                     {plan === null || plan === '' ? (
@@ -339,7 +435,7 @@ const Subscription = () => {
                                     Gym Count Available
                                 </MuiTypography>
                                 <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                    2
+                                    {plan.gymCount}
                                 </MuiTypography>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -349,7 +445,7 @@ const Subscription = () => {
                                     Branch Count Available
                                 </MuiTypography>
                                 <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                    3
+                                    {plan.branchCount}
                                 </MuiTypography>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -359,7 +455,7 @@ const Subscription = () => {
                                     Calorie Calculator
                                 </MuiTypography>
                                 <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                    Available
+                                    {plan.isCalAvailable ? 'Available' : 'NotAvailable'}
                                 </MuiTypography>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -369,7 +465,7 @@ const Subscription = () => {
                                     Diet Plan
                                 </MuiTypography>
                                 <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                    Not Available
+                                    {plan.isDietAvailable ? 'Available' : 'NotAvailable'}
                                 </MuiTypography>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -379,7 +475,7 @@ const Subscription = () => {
                                     Amount
                                 </MuiTypography>
                                 <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                    Rs 3200.00
+                                    {plan.amount}
                                 </MuiTypography>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -389,7 +485,7 @@ const Subscription = () => {
                                     Plan Description
                                 </MuiTypography>
                                 <MuiTypography style={{ maxWidth: '200px', minWidth: '200px' }} variant="subtitle1">
-                                    This is a Description about Gold plan
+                                    {plan.description}
                                 </MuiTypography>
                             </div>
                         </Grid>
