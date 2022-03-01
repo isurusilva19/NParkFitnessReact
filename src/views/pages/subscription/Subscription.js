@@ -47,6 +47,7 @@ import { useNavigate } from 'react-router-dom';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 
 import { Payhere, AccountCategory, Customer, CurrencyType, PayhereCheckout, CheckoutParams } from 'payhere-js-sdk';
+import { Store } from 'react-notifications-component';
 
 //= ==============================|| SHADOW BOX ||===============================//
 let theme;
@@ -155,9 +156,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ActivityCard = () => {
+const ActivityCard = ({ cardDetails }) => {
     theme = useTheme();
     const classes = useStyles();
+    console.log(cardDetails);
 
     return (
         <MainCard border={false} className={classes.card} contentClass={classes.content}>
@@ -171,7 +173,7 @@ const ActivityCard = () => {
                                 Method
                             </MuiTypography>
                             <MuiTypography style={{ maxWidth: '100px', minWidth: '100px', color: 'white' }} variant="subtitle1">
-                                Cash
+                                Card
                             </MuiTypography>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -181,7 +183,7 @@ const ActivityCard = () => {
                                 Date
                             </MuiTypography>
                             <MuiTypography style={{ maxWidth: '100px', minWidth: '100px', color: 'white' }} variant="subtitle1">
-                                2021/12/02
+                                {cardDetails.date}
                             </MuiTypography>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -191,7 +193,7 @@ const ActivityCard = () => {
                                 Amount
                             </MuiTypography>
                             <MuiTypography style={{ maxWidth: '100px', minWidth: '100px', color: 'white' }} variant="subtitle1">
-                                2500.00
+                                {cardDetails.amount}
                             </MuiTypography>
                         </div>
                     </Grid>
@@ -214,9 +216,11 @@ const Subscription = () => {
     const [plan, setPlan] = React.useState('');
     const [subscription, setSubscription] = React.useState(null);
     const [subscriptionTypes, setSubscriptionTypes] = React.useState(null);
+    const [subscriptionPayments, setSubscriptionPayments] = React.useState(null);
     const [menuItems, setMenuItems] = React.useState([]);
     const navigate = useNavigate();
     const ownerName = 'Saman';
+    const userId = 1;
 
     function getSubscriptionTypes() {
         // let arr = [];
@@ -229,6 +233,64 @@ const Subscription = () => {
         });
     }
 
+    function getSubscription() {
+        // let arr = [];
+        HttpCommon.get('/api/subscription/getSubscriptionByUserId/1').then((response) => {
+            console.log(response.data);
+            console.log(response.data.data);
+            console.log(response.data.data.isActive);
+            setSubscription(response.data.data);
+            HttpCommon.get('/api/subscriptionPayment/getSubscriptionPaymentByUserId/1').then((response) => {
+                console.log(response.data.data);
+                console.log(response.data.data.payment);
+                setSubscriptionPayments(response.data.data.payment);
+            });
+        });
+    }
+
+    function renewPlan() {
+        // let arr = [];
+        HttpCommon.put(`/api/subscription/RenewSubscription/${subscription.id}`, {
+            subscriptionTypeId: plan.id
+        })
+            .then((response) => {
+                console.log(response.data.data);
+                getSubscription();
+                Store.addNotification({
+                    title: 'Subscription Type Changed!',
+                    message: 'Subscription type changed successfully.',
+                    type: 'success',
+                    insert: 'top',
+                    container: 'top-right',
+                    animationIn: ['animate__animated', 'animate__fadeIn'],
+                    animationOut: ['animate__animated', 'animate__fadeOut'],
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true
+                    },
+                    width: 500
+                });
+            })
+            .catch((error) => {
+                // handle error
+                console.log(error);
+                Store.addNotification({
+                    title: 'Error Occured!',
+                    message: error.message,
+                    type: 'danger',
+                    insert: 'top',
+                    container: 'top-right',
+                    animationIn: ['animate__animated', 'animate__fadeIn'],
+                    animationOut: ['animate__animated', 'animate__fadeOut'],
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true
+                    },
+                    width: 500
+                });
+            });
+    }
+
     useEffect(async () => {
         // getData();
         // console.log("token = " + token);
@@ -236,12 +298,9 @@ const Subscription = () => {
         //     headers: { Authorization: `Bearer ${token}` }
         // };
         // if (token != null) {
-        HttpCommon.get('/api/subscription/getSubscriptionByUserId/1').then((response) => {
-            console.log(response.data.data);
-            console.log(response.data.data.isActive);
-            setSubscription(response.data.data);
-        });
+        getSubscription();
         getSubscriptionTypes();
+
         // } else {
         //     // navigate('/home')
         // }
@@ -360,57 +419,19 @@ const Subscription = () => {
                                 renderInput={(params) => <TextField {...params} label="Subscription Plan" />}
                                 onChange={handleChangePlan}
                             />
-                            <form method="post" action="https://sandbox.payhere.lk/pay/checkout">
-                                <div style={{ display: 'none' }}>
-                                    <input type="hidden" name="merchant_id" value="1217402" />
-                                    <input type="hidden" name="return_url" value="http://localhost:3000/pages/paymentSuccess" />
-                                    <input type="hidden" name="cancel_url" value="http://localhost:3000/pages/subscription" />
-                                    <input type="hidden" name="notify_url" value="http://localhost:3005/api/payment/notifyPayment" />
-                                    <br />
-                                    <br />
-                                    Item Details
-                                    <br />
-                                    <input type="hidden" name="order_id" value="65321" />
-                                    <input type="hidden" name="items" value="NParkFitness Monthly Subscription Payment" />
-                                    <br />
-                                    <input type="hidden" name="currency" value="LKR" />
-                                    <input type="hidden" name="amount" value={plan.amount} />
-                                    <br />
-                                    <br />
-                                    Customer Details
-                                    <br />
-                                    <input type="hidden" name="first_name" value={ownerName} />
-                                    <input type="hidden" name="last_name" value="" />
-                                    <br />
-                                    <input type="hidden" name="email" value="" />
-                                    <input type="hidden" name="phone" value="" />
-                                    <br />
-                                    <input type="hidden" name="address" value="{JSON.stringify(props.centers)}" />
-                                    <input type="hidden" name="city" value="" />
-                                    <input type="hidden" name="country" value="" />
-                                    <input type="hidden" name="custom_1" value="{JSON.stringify(props.centers)}" />
-                                    <br />
-                                    <br />
-                                    {/* <input type="submit" value="Buy Now" /> */}
-                                </div>
-                                {plan.amount < 1 || plan.amount == null ? (
-                                    <></>
-                                ) : (
-                                    <AnimateButton>
-                                        <Button type="submit" variant="contained" className={classes.button}>
-                                            Renew Plan
-                                        </Button>
-                                    </AnimateButton>
-                                    // <ButtonMaterial type="submit" variant="contained" className={classes.buttonMaterial2}>
-                                    //     Payment
-                                    // </ButtonMaterial>
-                                )}
-                            </form>
-                            {/* <AnimateButton>
-                                <Button variant="contained" className={classes.button}>
-                                    Renew Plan
-                                </Button>
-                            </AnimateButton> */}
+
+                            {plan.amount < 1 || plan.amount == null ? (
+                                <></>
+                            ) : (
+                                <AnimateButton>
+                                    <Button onClick={renewPlan} variant="contained" className={classes.button}>
+                                        Renew Plan
+                                    </Button>
+                                </AnimateButton>
+                                // <ButtonMaterial type="submit" variant="contained" className={classes.buttonMaterial2}>
+                                //     Payment
+                                // </ButtonMaterial>
+                            )}
                         </div>
                     </Grid>
                     {plan === null || plan === '' ? (
@@ -494,7 +515,20 @@ const Subscription = () => {
             </SubCard>
             <div style={{ height: '20px' }} />
             <SubCard title="Payment Activity">
-                <Grid container spacing={gridSpacing}>
+                {subscriptionPayments !== null && subscriptionPayments.length > 0 ? (
+                    <Grid container spacing={gridSpacing}>
+                        <>
+                            {subscriptionPayments.map((element) => (
+                                <Grid item xs={12} sm={6} md={6} lg={4}>
+                                    <ActivityCard cardDetails={element} />
+                                </Grid>
+                            ))}
+                        </>
+                    </Grid>
+                ) : (
+                    <></>
+                )}
+                {/* <Grid container spacing={gridSpacing}>
                     <Grid item xs={12} sm={6} md={6} lg={4}>
                         <ActivityCard />
                     </Grid>
@@ -504,7 +538,7 @@ const Subscription = () => {
                     <Grid item xs={12} sm={6} md={6} lg={4}>
                         <ActivityCard />
                     </Grid>
-                </Grid>
+                </Grid> */}
             </SubCard>
         </Grid>
     );

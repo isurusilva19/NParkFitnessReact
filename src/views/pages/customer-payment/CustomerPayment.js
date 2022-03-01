@@ -1,9 +1,22 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // material-ui
 import { makeStyles, useTheme, withStyles } from '@material-ui/styles';
-import { Box, Button, Card, Grid, TextField, Typography, Avatar, List, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
+import {
+    Box,
+    Button,
+    Card,
+    Grid,
+    TextField,
+    Typography,
+    Avatar,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+    CardMedia
+} from '@material-ui/core';
 
 // project imports
 import SubCard from 'ui-component/cards/SubCard';
@@ -23,6 +36,17 @@ import MapIcon from '@mui/icons-material/Map';
 
 import { purple, grey } from '@mui/material/colors';
 import TableChartOutlinedIcon from '@material-ui/icons/TableChartOutlined';
+import HttpCommon from 'utils/http-common';
+
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+
+import { Store } from 'react-notifications-component';
+import 'animate.css/animate.min.css';
 
 //= ==============================|| SHADOW BOX ||===============================//
 let theme;
@@ -112,15 +136,15 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ShadowBox = ({ shadow }) => {
+const ShadowBox = ({ image, name }) => {
     theme = useTheme();
 
     return (
-        <Card sx={{ height: 100, width: 100, mb: 3, boxShadow: shadow }}>
+        <Card sx={{ height: 150, width: 150, mb: 3, boxShadow: 0 }}>
             <Box
                 sx={{
-                    height: 100,
-                    width: 100,
+                    height: 150,
+                    width: 150,
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -129,19 +153,23 @@ const ShadowBox = ({ shadow }) => {
                     color: theme.palette.grey[800]
                 }}
             >
-                <MuiTypography style={{ fontSize: '40px' }} right variant="subtitle1">
-                    IN
-                </MuiTypography>
+                {image !== null ? (
+                    <CardMedia component="img" image={image} alt="green iguana" />
+                ) : (
+                    <MuiTypography style={{ fontSize: '40px' }} right variant="subtitle1">
+                        {name}
+                    </MuiTypography>
+                )}
             </Box>
         </Card>
     );
 };
 
-ShadowBox.propTypes = {
-    shadow: PropTypes.string.isRequired
-};
+// ShadowBox.propTypes = {
+//     shadow: PropTypes.string.isRequired
+// };
 
-const ActivityCard = () => {
+const ActivityCard = ({ cardDetails }) => {
     theme = useTheme();
     const classes = useStyles();
 
@@ -157,7 +185,7 @@ const ActivityCard = () => {
                                 Method
                             </MuiTypography>
                             <MuiTypography style={{ maxWidth: '100px', minWidth: '100px', color: 'white' }} variant="subtitle1">
-                                Cash
+                                {cardDetails.method.charAt(0).toUpperCase() + cardDetails.method.slice(1)}
                             </MuiTypography>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -167,7 +195,7 @@ const ActivityCard = () => {
                                 Date
                             </MuiTypography>
                             <MuiTypography style={{ maxWidth: '100px', minWidth: '100px', color: 'white' }} variant="subtitle1">
-                                2021/12/02
+                                {cardDetails.date}
                             </MuiTypography>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
@@ -177,7 +205,7 @@ const ActivityCard = () => {
                                 Amount
                             </MuiTypography>
                             <MuiTypography style={{ maxWidth: '100px', minWidth: '100px', color: 'white' }} variant="subtitle1">
-                                2500.00
+                                Rs {cardDetails.amount}
                             </MuiTypography>
                         </div>
                     </Grid>
@@ -195,8 +223,90 @@ const CustomTypography = withStyles({
     }
 })(MuiTypography);
 
-const CustomerPayment = () => {
+/* eslint prefer-arrow-callback: [ "error", { "allowNamedFunctions": true } ] */
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
+const CustomerPayment = ({ memberId }) => {
     const classes = useStyles();
+    const [memberData, setMemberData] = React.useState(null);
+    const [searchText, setSearchText] = React.useState();
+    const [open, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    function getMemberDetails() {
+        // let arr = [];
+        HttpCommon.get(`/api/payment/getAllPaymentByMemberId/${searchText}`).then((response) => {
+            console.log(response.data.data);
+            setMemberData(response.data.data);
+            if (response.data.data.member === null) {
+                Store.addNotification({
+                    title: 'Error Occured!',
+                    message: 'Enter Member Id Cannot Found In Your Gym',
+                    type: 'danger',
+                    insert: 'top',
+                    container: 'top-right',
+                    animationIn: ['animate__animated', 'animate__fadeIn'],
+                    animationOut: ['animate__animated', 'animate__fadeOut'],
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true
+                    },
+                    width: 500
+                });
+            }
+        });
+    }
+
+    function makePayment() {
+        // let arr = [];
+        HttpCommon.post(`/api/payment/`, {
+            date: new Date().toISOString().slice(0, 10),
+            amount: memberData.member.membershipType.amount,
+            membershipId: memberData.member.id,
+            method: 'cash'
+        }).then((response) => {
+            console.log(response.data.data);
+            setOpen(false);
+            Store.addNotification({
+                title: 'Payment Added Successfully!',
+                message: 'Customer payment added successfully.',
+                type: 'success',
+                insert: 'top',
+                container: 'top-right',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                    onScreen: true
+                },
+                width: 500
+            });
+            getMemberDetails();
+        });
+    }
+
+    useEffect(async () => {
+        console.log(memberId);
+        if (memberId !== undefined) {
+            setSearchText(memberId);
+            getMemberDetails();
+        }
+    }, []);
+
+    const handleChangeText = (event) => {
+        console.log(event.target.value);
+        setSearchText(event.target.value);
+    };
+
     return (
         <Grid spacing={gridSpacing}>
             <SubCard>
@@ -210,10 +320,20 @@ const CustomerPayment = () => {
                         {/* <Typography className={classes.subHeading}>MembershipID :</Typography> */}
                     </Grid>
                     <Grid align="left" item xs={12} sm={6} md={3} lg={3}>
-                        <TextField style={{ maxWidth: '200px', minWidth: '200px' }} id="outlined-basic" variant="outlined" />
+                        <TextField
+                            style={{ maxWidth: '200px', minWidth: '200px' }}
+                            id="outlined-basic"
+                            variant="outlined"
+                            onChange={handleChangeText}
+                        />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3} lg={3}>
-                        <Button style={{ maxWidth: '100px', minWidth: '100px' }} color="secondary" variant="contained">
+                        <Button
+                            style={{ maxWidth: '100px', minWidth: '100px' }}
+                            color="secondary"
+                            variant="contained"
+                            onClick={getMemberDetails}
+                        >
                             Search
                         </Button>
                     </Grid>
@@ -221,146 +341,188 @@ const CustomerPayment = () => {
             </SubCard>
             <div style={{ height: '20px' }} />
             {/* bgcolor: 'secondary.main', */}
-            <SubCard sx={{ color: 'white' }} title="Customer Detailes">
-                <Grid container alignItems="center" justifyContent="center" spacing={gridSpacing}>
-                    <Grid align="center" item xs={12} sm={6} md={6} lg={6}>
-                        <ShadowBox shadow="0" />
-                        {/* <Grid alignItems="center" justifyContent="center" container xs={12} sm={6} md={6} lg={6}>
-                            <MuiTypography align="center" justifyContent="center" variant="subtitle1">
-                                Induwara Nagodavithana
-                            </MuiTypography>
-                        </Grid> */}
-                        <Grid alignItems="center" container xs={12} sm={6} md={6} lg={6}>
-                            <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', margin: '10px' }}>
-                                <MuiTypography
+            {memberData !== null && memberData.member !== null ? (
+                <SubCard sx={{ color: 'white' }} title="Customer Detailes">
+                    <Grid container alignItems="center" justifyContent="center" spacing={gridSpacing}>
+                        <Grid align="center" item xs={12} sm={6} md={6} lg={6}>
+                            <ShadowBox
+                                name={memberData.member.user.firstName.charAt(0) + memberData.member.user.lastName.charAt(0)}
+                                image={memberData.member.user.image}
+                            />
+                            {/* <Grid alignItems="center" justifyContent="center" container xs={12} sm={6} md={6} lg={6}>
+                        <MuiTypography align="center" justifyContent="center" variant="subtitle1">
+                            Induwara Nagodavithana
+                        </MuiTypography>
+                    </Grid> */}
+                            <Grid alignItems="center" container xs={12} sm={6} md={6} lg={6}>
+                                <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', margin: '10px' }}>
+                                    <MuiTypography
+                                        align="center"
+                                        justifyContent="center"
+                                        style={{ maxWidth: '150px', minWidth: '150px', fontSize: '20px' }}
+                                        variant="subtitle1"
+                                    >
+                                        Pay Amount
+                                    </MuiTypography>
+                                    <MuiTypography
+                                        align="center"
+                                        style={{ maxWidth: '150px', minWidth: '150px', fontSize: '20px' }}
+                                        variant="subtitle1"
+                                        justifyContent="center"
+                                    >
+                                        Rs {memberData.member.membershipType.amount}
+                                    </MuiTypography>
+                                </div>
+                            </Grid>
+                            <Grid alignItems="center" justifyContent="center" container xs={12} sm={6} md={6} lg={6}>
+                                <Button
                                     align="center"
                                     justifyContent="center"
-                                    style={{ maxWidth: '150px', minWidth: '150px', fontSize: '20px' }}
-                                    variant="subtitle1"
+                                    style={{ maxWidth: '100px', minWidth: '100px' }}
+                                    color="secondary"
+                                    variant="contained"
+                                    onClick={handleClickOpen}
                                 >
-                                    Pay Amount
-                                </MuiTypography>
-                                <MuiTypography
-                                    align="center"
-                                    style={{ maxWidth: '150px', minWidth: '150px', fontSize: '20px' }}
-                                    variant="subtitle1"
-                                    justifyContent="center"
-                                >
-                                    Rs 2500.00
-                                </MuiTypography>
+                                    Pay
+                                </Button>
+                            </Grid>
+                        </Grid>
+                        <Grid container justifyContent="center" alignItems="center" direction="column" xs={12} sm={6} md={6} lg={6}>
+                            <div style={{ height: '20px' }} />
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <CreditCardIcon sx={{ color: '#7E7676' }} />
+                                <div style={{ width: '20px' }} />
+                                <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
+                                    Membership ID
+                                </CustomTypography>
+                                <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
+                                    {memberData.member.id}
+                                </CustomTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <EventIcon sx={{ color: '#7E7676' }} />
+                                <div style={{ width: '20px' }} />
+                                <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
+                                    Expire Date
+                                </CustomTypography>
+                                <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
+                                    {memberData.member.expireDate}
+                                </CustomTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <BadgeIcon sx={{ color: '#7E7676' }} />
+                                <div style={{ width: '20px' }} />
+                                <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
+                                    First Name
+                                </CustomTypography>
+                                <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
+                                    {memberData.member.user.firstName}
+                                </CustomTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <BadgeIcon sx={{ color: '#7E7676' }} />
+                                <div style={{ width: '20px' }} />
+                                <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
+                                    Last Name
+                                </CustomTypography>
+                                <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
+                                    {memberData.member.user.lastName}
+                                </CustomTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <LocationOnIcon sx={{ color: '#7E7676' }} />
+                                <div style={{ width: '20px' }} />
+                                <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
+                                    Street
+                                </CustomTypography>
+                                <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
+                                    {memberData.member.user.street}
+                                </CustomTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <LocationOnIcon sx={{ color: '#7E7676' }} />
+                                <div style={{ width: '20px' }} />
+                                <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
+                                    Lane
+                                </CustomTypography>
+                                <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
+                                    {memberData.member.user.lane}
+                                </CustomTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <FlagIcon sx={{ color: '#7E7676' }} />
+                                <div style={{ width: '20px' }} />
+                                <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
+                                    City
+                                </CustomTypography>
+                                <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
+                                    {memberData.member.user.city}
+                                </CustomTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <MapIcon sx={{ color: '#7E7676' }} />
+                                <div style={{ width: '20px' }} />
+                                <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
+                                    Province
+                                </CustomTypography>
+                                <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
+                                    {memberData.member.user.province}
+                                </CustomTypography>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
+                                <EmailIcon sx={{ color: '#7E7676' }} />
+                                <div style={{ width: '20px' }} />
+                                <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
+                                    email
+                                </CustomTypography>
+                                <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
+                                    {memberData.member.user.email}
+                                </CustomTypography>
                             </div>
                         </Grid>
-                        <Grid alignItems="center" justifyContent="center" container xs={12} sm={6} md={6} lg={6}>
-                            <Button
-                                align="center"
-                                justifyContent="center"
-                                style={{ maxWidth: '100px', minWidth: '100px' }}
-                                color="secondary"
-                                variant="contained"
-                            >
-                                Pay
-                            </Button>
-                        </Grid>
                     </Grid>
-                    <Grid container justifyContent="center" alignItems="center" direction="column" xs={12} sm={6} md={6} lg={6}>
-                        <div style={{ height: '20px' }} />
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <CreditCardIcon sx={{ color: '#7E7676' }} />
-                            <div style={{ width: '20px' }} />
-                            <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
-                                Membership ID
-                            </CustomTypography>
-                            <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
-                                1203245
-                            </CustomTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <BadgeIcon sx={{ color: '#7E7676' }} />
-                            <div style={{ width: '20px' }} />
-                            <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
-                                First Name
-                            </CustomTypography>
-                            <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
-                                Induwara
-                            </CustomTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <BadgeIcon sx={{ color: '#7E7676' }} />
-                            <div style={{ width: '20px' }} />
-                            <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
-                                Last Name
-                            </CustomTypography>
-                            <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
-                                Nagodavithana
-                            </CustomTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <LocationOnIcon sx={{ color: '#7E7676' }} />
-                            <div style={{ width: '20px' }} />
-                            <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
-                                Street
-                            </CustomTypography>
-                            <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
-                                Niladeniya
-                            </CustomTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <LocationOnIcon sx={{ color: '#7E7676' }} />
-                            <div style={{ width: '20px' }} />
-                            <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
-                                Lane
-                            </CustomTypography>
-                            <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
-                                Hapugala
-                            </CustomTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <FlagIcon sx={{ color: '#7E7676' }} />
-                            <div style={{ width: '20px' }} />
-                            <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
-                                City
-                            </CustomTypography>
-                            <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
-                                Galle
-                            </CustomTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <MapIcon sx={{ color: '#7E7676' }} />
-                            <div style={{ width: '20px' }} />
-                            <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
-                                Province
-                            </CustomTypography>
-                            <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
-                                Southern
-                            </CustomTypography>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>
-                            <EmailIcon sx={{ color: '#7E7676' }} />
-                            <div style={{ width: '20px' }} />
-                            <CustomTypography style={{ maxWidth: '150px', minWidth: '150px' }} variant="subtitle1">
-                                email
-                            </CustomTypography>
-                            <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
-                                Induwara
-                            </CustomTypography>
-                        </div>
-                    </Grid>
-                </Grid>
-            </SubCard>
+                </SubCard>
+            ) : (
+                <></>
+            )}
             <div style={{ height: '20px' }} />
-            <SubCard title="Payment Activity">
-                <Grid container spacing={gridSpacing}>
-                    <Grid item xs={12} sm={6} md={6} lg={4}>
-                        <ActivityCard />
+            {memberData !== null && memberData.payment.length > 0 ? (
+                <SubCard title="Payment Activity">
+                    <Grid container spacing={gridSpacing}>
+                        <>
+                            {memberData.payment.map((element) => (
+                                <Grid item xs={12} sm={6} md={6} lg={4}>
+                                    <ActivityCard cardDetails={element} />
+                                </Grid>
+                            ))}
+                        </>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={6} lg={4}>
-                        <ActivityCard />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={6} lg={4}>
-                        <ActivityCard />
-                    </Grid>
-                </Grid>
-            </SubCard>
+                </SubCard>
+            ) : (
+                <></>
+            )}
+            <Dialog
+                open={open}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleClose}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <DialogTitle style={{ fontSize: 20 }}>Confirm Payment</DialogTitle>
+                <DialogContent>
+                    <DialogContentText style={{ fontSize: 15 }} id="alert-dialog-slide-description">
+                        Do you want to confirm this payment.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button color="secondary" onClick={handleClose}>
+                        Disagree
+                    </Button>
+                    <Button color="secondary" onClick={makePayment}>
+                        Agree
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Grid>
     );
 };
