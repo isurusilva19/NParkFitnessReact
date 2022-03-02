@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 
 // ===========================|| DASHBOARD DEFAULT - POPULAR CARD ||=========================== //
 
-const PopularCard = ({ isLoading }) => {
+const PopularCard = ({ isLoading, data }) => {
     const classes = useStyles();
 
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -122,98 +122,53 @@ const PopularCard = ({ isLoading }) => {
                                 <BajajAreaChartCard />
                             </Grid> */}
                             <Grid item xs={12}>
-                                <Grid container direction="column">
-                                    <Grid item>
-                                        <Grid container alignItems="center" justifyContent="space-between">
-                                            <Grid item>
-                                                <Typography variant="subtitle1" color="inherit">
-                                                    FitMora-Galle
-                                                </Typography>
-                                            </Grid>
-                                            <Grid item>
-                                                <Grid container alignItems="center" justifyContent="space-between">
+                                {data !== undefined && data.length > 0 ? (
+                                    <>
+                                        {data.map((element) => (
+                                            <>
+                                                <Grid container direction="column">
                                                     <Grid item>
-                                                        <Typography variant="subtitle1" color="inherit">
-                                                            $1839.00
-                                                        </Typography>
-                                                    </Grid>
-                                                    {/* <Grid item>
+                                                        <Grid container alignItems="center" justifyContent="space-between">
+                                                            <Grid item>
+                                                                <Typography variant="subtitle1" color="inherit">
+                                                                    {element.membership.branch.name}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item>
+                                                                <Grid container alignItems="center" justifyContent="space-between">
+                                                                    <Grid item>
+                                                                        <Typography variant="subtitle1" color="inherit">
+                                                                            Rs {element.totalAmount}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                    {/* <Grid item>
                                                         <Avatar variant="rounded" className={classes.avatarSuccess}>
                                                             <KeyboardArrowUpOutlinedIcon fontSize="small" color="inherit" />
                                                         </Avatar>
                                                     </Grid> */}
-                                                </Grid>
-                                            </Grid>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography variant="subtitle2" className={classes.secondary}>
-                                            10 Memberships
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                                <Divider className={classes.divider} />
-                                <Grid container direction="column">
-                                    <Grid item>
-                                        <Grid container alignItems="center" justifyContent="space-between">
-                                            <Grid item>
-                                                <Typography variant="subtitle1" color="inherit">
-                                                    FitMora-Colombo
-                                                </Typography>
-                                            </Grid>
-                                            <Grid item>
-                                                <Grid container alignItems="center" justifyContent="space-between">
-                                                    <Grid item>
-                                                        <Typography variant="subtitle1" color="inherit">
-                                                            $100.00
-                                                        </Typography>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Grid>
                                                     </Grid>
-                                                    {/* <Grid item>
-                                                        <Avatar variant="rounded" className={classes.avatarError}>
-                                                            <KeyboardArrowDownOutlinedIcon fontSize="small" color="inherit" />
-                                                        </Avatar>
-                                                    </Grid> */}
-                                                </Grid>
-                                            </Grid>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography variant="subtitle2" className={classes.secondary}>
-                                            10 Memberships
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                                <Divider className={classes.divider} />
-                                <Grid container direction="column">
-                                    <Grid item>
-                                        <Grid container alignItems="center" justifyContent="space-between">
-                                            <Grid item>
-                                                <Typography variant="subtitle1" color="inherit">
-                                                    FitMora-Kandy
-                                                </Typography>
-                                            </Grid>
-                                            <Grid item>
-                                                <Grid container alignItems="center" justifyContent="space-between">
                                                     <Grid item>
-                                                        <Typography variant="subtitle1" color="inherit">
-                                                            $200.00
-                                                        </Typography>
+                                                        {element.membership.branch.isActive ? (
+                                                            <Typography variant="subtitle1" className={classes.successDark}>
+                                                                Active
+                                                            </Typography>
+                                                        ) : (
+                                                            <Typography variant="subtitle1" className={classes.errorDark}>
+                                                                InActive
+                                                            </Typography>
+                                                        )}
                                                     </Grid>
-                                                    {/* <Grid item>
-                                                        <Avatar variant="rounded" className={classes.avatarSuccess}>
-                                                            <KeyboardArrowUpOutlinedIcon fontSize="small" color="inherit" />
-                                                        </Avatar>
-                                                    </Grid> */}
                                                 </Grid>
-                                            </Grid>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography variant="subtitle2" className={classes.secondary}>
-                                            20 Memberships
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
+                                                <Divider className={classes.divider} />
+                                            </>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <></>
+                                )}
                             </Grid>
                         </Grid>
                     </CardContent>

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // material-ui
 import { makeStyles } from '@material-ui/styles';
@@ -97,13 +97,129 @@ const useStyles = makeStyles((theme) => ({
 
 // ===========================|| DASHBOARD - TOTAL ORDER LINE CHART CARD ||=========================== //
 
-const AttendanceCard = ({ isLoading }) => {
+const AttendanceCard = ({ isLoading, data }) => {
     const classes = useStyles();
+    console.log(data);
+    console.log(data.monthArr);
+    console.log(data.yearArr);
+
+    let monthArr = [5, 8, 4, 3, 6, 9, 5];
+    let yearArr = [5, 8, 4, 3, 6, 9, 5];
+    if (data !== undefined) {
+        monthArr = data.monthArr;
+        yearArr = data.yearArr;
+    }
 
     const [timeValue, setTimeValue] = React.useState(false);
+    // const [attendanceMonthChart, setAttendanceMonthChart] = React.useState();
+    // const [attendanceYearChart, setAttendanceYearChart] = React.useState();
     const handleChangeTime = (event, newValue) => {
         setTimeValue(newValue);
     };
+
+    const chartMonthData = {
+        type: 'line',
+        height: 90,
+        options: {
+            chart: {
+                sparkline: {
+                    enabled: true
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            colors: ['#fff'],
+            fill: {
+                type: 'solid',
+                opacity: 1
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            yaxis: {
+                min: 0
+            },
+            tooltip: {
+                theme: 'dark',
+                fixed: {
+                    enabled: false
+                },
+                x: {
+                    show: false
+                },
+                y: {
+                    title: {
+                        formatter: () => 'Attendance'
+                    }
+                },
+                marker: {
+                    show: false
+                }
+            }
+        },
+        series: [
+            {
+                name: 'series1',
+                data: monthArr
+            }
+        ]
+    };
+
+    const chartYearData = {
+        type: 'line',
+        height: 90,
+        options: {
+            chart: {
+                sparkline: {
+                    enabled: true
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            colors: ['#fff'],
+            fill: {
+                type: 'solid',
+                opacity: 1
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            yaxis: {
+                min: 0
+            },
+            tooltip: {
+                theme: 'dark',
+                fixed: {
+                    enabled: false
+                },
+                x: {
+                    show: false
+                },
+                y: {
+                    title: {
+                        formatter: () => 'Attendance'
+                    }
+                },
+                marker: {
+                    show: false
+                }
+            }
+        },
+        series: [
+            {
+                name: 'series1',
+                data: yearArr
+            }
+        ]
+    };
+
+    // useEffect(() => {
+
+    // }, []);
 
     return (
         <>
@@ -145,9 +261,9 @@ const AttendanceCard = ({ isLoading }) => {
                                     <Grid container alignItems="center">
                                         <Grid item>
                                             {timeValue ? (
-                                                <Typography className={classes.cardHeading}>108</Typography>
+                                                <Typography className={classes.cardHeading}>{data.monthCount}</Typography>
                                             ) : (
-                                                <Typography className={classes.cardHeading}>950</Typography>
+                                                <Typography className={classes.cardHeading}>{data.yearCount}</Typography>
                                             )}
                                         </Grid>
                                         <Grid item>
@@ -160,9 +276,16 @@ const AttendanceCard = ({ isLoading }) => {
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={6}>
-                                    {timeValue ? <Chart {...ChartDataMonth} /> : <Chart {...ChartDataYear} />}
-                                </Grid>
+                                {data !== undefined ? (
+                                    <Grid item xs={6}>
+                                        {timeValue ? <Chart {...chartMonthData} /> : <Chart {...chartYearData} />}
+                                    </Grid>
+                                ) : (
+                                    <></>
+                                )}
+                                {/* <Grid item xs={6}>
+                                    {timeValue ? <Chart {...data.chartMonthData} /> : <Chart {...data.chartYearData} />}
+                                </Grid> */}
                             </Grid>
                         </Grid>
                     </Grid>
