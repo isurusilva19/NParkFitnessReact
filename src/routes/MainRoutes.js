@@ -8,9 +8,12 @@ import Loadable from 'ui-component/Loadable';
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
 const DashboardOwner = Loadable(lazy(() => import('views/dashboard/owner-dashboard/OwnerDashboard')));
 const DashboardManager = Loadable(lazy(() => import('views/dashboard/manager-dashboard/ManagerDashboard')));
+const DashboardTrainer = Loadable(lazy(() => import('views/dashboard/trainer-dashboard/TrainerDashboard')));
+const DashboardAdmin = Loadable(lazy(() => import('views/dashboard/admin-dashboard/AdminDashboard')));
 
 const CustomerPayment = Loadable(lazy(() => import('views/pages/customer-payment/CustomerPayment')));
 const Subscription = Loadable(lazy(() => import('views/pages/subscription/Subscription')));
+const Notification = Loadable(lazy(() => import('views/pages/notification/Notification')));
 
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
@@ -45,12 +48,24 @@ const MainRoutes = {
             element: <DashboardManager />
         },
         {
+            path: '/dashboard/trainer',
+            element: <DashboardTrainer />
+        },
+        {
+            path: '/dashboard/admin',
+            element: <DashboardAdmin />
+        },
+        {
             path: '/pages/customerPayment',
             element: <CustomerPayment />
         },
         {
             path: '/pages/subscription',
             element: <Subscription />
+        },
+        {
+            path: '/pages/notification',
+            element: <Notification />
         },
         {
             path: '/utils/util-typography',
