@@ -20,6 +20,8 @@ import HttpCommon from 'utils/http-common';
 import { Store } from 'react-notifications-component';
 import Lottie from 'react-lottie';
 import * as success from 'assets/images/loading.json';
+import BlueCard from '../dashboard-component/BlueCard';
+import SubTypeCard from '../dashboard-component/SubTypeCard';
 
 // ===========================|| DEFAULT DASHBOARD ||=========================== //
 const defaultOptions = {
@@ -31,94 +33,83 @@ const defaultOptions = {
     }
 };
 
-const OwnerDashboard = () => {
+const AdminDashboard = () => {
     const [isLoading, setLoading] = useState(false);
     const [isDataLoading, setDataLoading] = useState(true);
     const [memberCount, setMemberCount] = useState();
     const [serviceCount, setServiceCount] = useState();
     const [exMemberCount, setExMemberCount] = useState();
     const [branchCount, setBranchCount] = useState();
+    const [inActiveBranchCount, setInActiveBranchCount] = useState();
     const [trainerCount, setTrainerCount] = useState();
     const [managerCount, setManagerCount] = useState();
-    const [attendanceCount, setAttendanceCount] = useState();
+    const [gymCount, setGymCount] = useState();
     const [incomeCount, setIncomeCount] = useState();
-    const [branchesData, setBranchesData] = useState();
+    const [subTypeData, setSubTypeData] = useState();
 
-    const gymId = 1;
-
-    function getManagerDashboard() {
+    function getAdminDashboard() {
         // let arr = [];
 
-        HttpCommon.get(`/api/dashboard/getBranchMonthIncome/${gymId}`).then((response1) => {
-            console.log(response1.data.data);
-            setBranchesData(response1.data.data);
-            HttpCommon.get(`api/dashboard/getOwnerDashboardData/${gymId}`).then(async (response) => {
-                console.log(response.data.data);
-                console.log(response.data.data.staffCount);
-                setMemberCount(response.data.data.memberCount);
-                setServiceCount(response.data.data.serviceCount);
-                setBranchCount(response.data.data.branchCount);
-                setExMemberCount(response.data.data.exMemberCount);
+        HttpCommon.get(`api/dashboard/getAdminDashboardData`).then(async (response) => {
+            console.log(response.data.data);
+            setServiceCount(response.data.data.serviceCount);
+            setBranchCount(response.data.data.branchCount);
+            setGymCount(response.data.data.gymCount);
+            setSubTypeData(response.data.data.subscriptionType);
 
-                await Promise.all(
-                    await response.data.data.staffCount.map((element) => {
-                        if (element.type === 'Manager') {
-                            setManagerCount(element.count);
-                        } else if (element.type === 'Trainer') {
-                            setTrainerCount(element.count);
-                        }
-                        return 0;
-                    })
-                );
+            await Promise.all(
+                await response.data.data.branchCount.map((element) => {
+                    if (element.isActive) {
+                        setBranchCount(element.count);
+                    } else {
+                        setInActiveBranchCount(element.count);
+                    }
+                    return 0;
+                })
+            );
 
-                let body = {
-                    chartMonthData: [],
-                    chartYearData: [],
-                    monthCount: 0,
-                    yearCount: 0
-                };
-                if (response.data.data.attendanceCount !== null) {
-                    const monthArr = [];
-                    const yearArr = [];
-                    let monthCount = 0;
-                    let yearCount = 0;
-                    await Promise.all(
-                        response.data.data.attendanceCount.attendanceMonth.map((element) => {
-                            monthCount += element.count;
-                            return monthArr.push(element.count);
-                        })
-                    );
-                    await Promise.all(
-                        response.data.data.attendanceCount.attendanceYear.map((element) => {
-                            yearCount += element.count;
-                            return yearArr.push(element.count);
-                        })
-                    );
+            let totalMemberCount = 0;
+            await Promise.all(
+                await response.data.data.memberCount.map((element) => {
+                    totalMemberCount += element.count;
+                    if (!element.isActive) {
+                        setExMemberCount(element.count);
+                    }
+                    return 0;
+                })
+            );
+            setMemberCount(totalMemberCount);
 
-                    body = { monthArr, yearArr, monthCount, yearCount };
-                }
+            await Promise.all(
+                await response.data.data.userCount.map((element) => {
+                    if (element.type === 'Manager') {
+                        setManagerCount(element.count);
+                    } else if (element.type === 'Trainer') {
+                        setTrainerCount(element.count);
+                    }
+                    return 0;
+                })
+            );
 
-                setAttendanceCount(body);
-                const incomeArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                await Promise.all(
-                    response.data.data.incomeCount.map((element) => {
-                        const month = parseInt(element.date.slice(5, 7), 10);
-                        incomeArr[month - 1] = element.totalAmount;
-                        return 0;
-                    })
-                );
-                console.log(incomeArr);
-                setIncomeCount(incomeArr);
-                console.log('Is It Done2');
+            const incomeArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            await Promise.all(
+                response.data.data.payment.map((element) => {
+                    const month = parseInt(element.date.slice(5, 7), 10);
+                    incomeArr[month - 1] = element.totalAmount;
+                    return 0;
+                })
+            );
+            console.log(incomeArr);
+            setIncomeCount(incomeArr);
+            console.log('Is It Done2');
 
-                setDataLoading(false);
-                // setLoading(false);
-            });
+            setDataLoading(false);
+            // setLoading(false);
         });
     }
 
     useEffect(() => {
-        getManagerDashboard();
+        getAdminDashboard();
     }, []);
 
     return (
@@ -143,7 +134,7 @@ const OwnerDashboard = () => {
                                 <IncomeCard isLoading={isLoading} amount={memberCount} title="Total Member Count" />
                             </Grid>
                             <Grid item lg={4} md={6} sm={6} xs={12}>
-                                <AttendanceCard isLoading={isLoading} data={attendanceCount} />
+                                <BlueCard isLoading={isLoading} amount={gymCount} title="Total Gym Count" />
                             </Grid>
                             <Grid item lg={4} md={12} sm={12} xs={12}>
                                 <Grid container spacing={gridSpacing}>
@@ -167,28 +158,34 @@ const OwnerDashboard = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
+                            <Grid item sm={6} xs={12} md={4} lg={4}>
+                                <SmallDarkCard
+                                    isLoading={isLoading}
+                                    amount={`${inActiveBranchCount} Branches`}
+                                    title="Total Inactive Branch"
+                                />
+                            </Grid>
+                            <Grid item sm={6} xs={12} md={4} lg={4}>
+                                <SmallLightCard isLoading={isLoading} amount={`${trainerCount} Trainers`} title="Total Trainers" />
+                            </Grid>
+                            <Grid item sm={6} xs={12} md={4} lg={4}>
+                                <SmallDarkCard isLoading={isLoading} amount={`${managerCount} Managers`} title="Total Managers" />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Grid container spacing={gridSpacing}>
                             <Grid item xs={12} md={8}>
                                 <TotalGrowthBarChart isLoading={isLoading} incomeData={incomeCount} />
                             </Grid>
                             <Grid item xs={12} md={4}>
                                 <Grid container spacing={gridSpacing}>
                                     <Grid item sm={6} xs={12} md={12} lg={12}>
-                                        <SmallDarkCard
-                                            isLoading={isLoading}
-                                            amount={`${trainerCount} Trainers`}
-                                            title="Total Trainers In Gym"
-                                        />
-                                    </Grid>
-                                    <Grid item sm={6} xs={12} md={12} lg={12}>
-                                        <SmallLightCard
-                                            isLoading={isLoading}
-                                            amount={`${managerCount} Managers`}
-                                            title="Total Managers In Gym"
-                                        />
+                                        <SmallLightCard isLoading={isLoading} amount={`${serviceCount} Service`} title="Total Services" />
                                     </Grid>
                                 </Grid>
                                 <div style={{ height: '20px' }} />
-                                <PopularCard isLoading={isLoading} data={branchesData} />
+                                <SubTypeCard isLoading={isLoading} data={subTypeData} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -198,4 +195,4 @@ const OwnerDashboard = () => {
     );
 };
 
-export default OwnerDashboard;
+export default AdminDashboard;

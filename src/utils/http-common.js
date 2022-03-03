@@ -8,6 +8,7 @@ import axios from 'axios';
 // });
 
 const instance = axios.create({
+    // baseURL: 'http://node-env.eba-nnjn7b3w.us-east-2.elasticbeanstalk.com',
     baseURL: 'http://localhost:3005',
     // baseURL: "http://192.168.1.24:3005",
     timeout: 30000,

@@ -32,7 +32,7 @@ const defaultOptions = {
     }
 };
 
-const ManagerDashboard = () => {
+const TrainerDashboard = () => {
     const [isLoading, setLoading] = useState(false);
     const [isDataLoading, setDataLoading] = useState(true);
     const [memberCount, setMemberCount] = useState();
@@ -150,14 +150,14 @@ const ManagerDashboard = () => {
                             </Grid>
                             <Grid item lg={4} md={12} sm={12} xs={12}>
                                 <Grid container spacing={gridSpacing}>
-                                    <Grid item sm={6} xs={12} md={6} lg={12}>
+                                    <Grid item sm={6} xs={12} md={12} lg={12}>
                                         <SmallDarkCard
                                             isLoading={isLoading}
                                             amount={`${serviceCount} Services`}
                                             title="Total Services In Branch"
                                         />
                                     </Grid>
-                                    <Grid item sm={6} xs={12} md={6} lg={12}>
+                                    <Grid item sm={6} xs={12} md={12} lg={12}>
                                         <SmallLightCard
                                             isLoading={isLoading}
                                             amount={`${exMemberCount} Membership`}
@@ -170,28 +170,8 @@ const ManagerDashboard = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
-                            <Grid item xs={12} md={8}>
+                            <Grid item xs={12} md={12}>
                                 <TotalGrowthBarChart isLoading={isLoading} incomeData={incomeCount} />
-                            </Grid>
-                            <Grid item xs={12} md={4}>
-                                <Grid container spacing={gridSpacing}>
-                                    <Grid item sm={6} xs={12} md={12} lg={12}>
-                                        <SmallDarkCard
-                                            isLoading={isLoading}
-                                            amount={`${trainerCount} Trainers`}
-                                            title="Total Trainers In Branch"
-                                        />
-                                    </Grid>
-                                    <Grid item sm={6} xs={12} md={12} lg={12}>
-                                        <SmallLightCard
-                                            isLoading={isLoading}
-                                            amount={`${managerCount} Managers`}
-                                            title="Total Managers In Branch"
-                                        />
-                                    </Grid>
-                                </Grid>
-                                <div style={{ height: '20px' }} />
-                                <ServiceCard isLoading={isLoading} data={serviceData} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -201,4 +181,4 @@ const ManagerDashboard = () => {
     );
 };
 
-export default ManagerDashboard;
+export default TrainerDashboard;

@@ -16,9 +16,9 @@ const dashboard = {
     children: [
         {
             id: 'default',
-            title: 'Dashboard',
+            title: 'Admin Dashboard',
             type: 'item',
-            url: '/dashboard/default',
+            url: '/dashboard/admin',
             icon: icons.IconDashboard,
             breadcrumbs: false
         },
@@ -35,6 +35,14 @@ const dashboard = {
             title: 'Manager Dashboard',
             type: 'item',
             url: '/dashboard/manager',
+            icon: icons.IconDashboard,
+            breadcrumbs: false
+        },
+        {
+            id: 'trainer',
+            title: 'Trainer Dashboard',
+            type: 'item',
+            url: '/dashboard/trainer',
             icon: icons.IconDashboard,
             breadcrumbs: false
         }

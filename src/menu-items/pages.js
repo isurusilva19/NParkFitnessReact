@@ -71,10 +71,10 @@ const pages = {
             breadcrumbs: false
         },
         {
-            id: 'customerPayment1',
-            title: 'Subscription Type',
+            id: 'notification',
+            title: 'Notification',
             type: 'item',
-            url: '/sample-page',
+            url: '/pages/notification',
             icon: IconBrandCodesandbox,
             breadcrumbs: false
         },
