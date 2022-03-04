@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // material-ui
 import { makeStyles } from '@material-ui/styles';
@@ -20,7 +20,18 @@ import {
 } from '@material-ui/core';
 
 // assets
-import { IconBrandTelegram, IconBuildingStore, IconMailbox, IconPhoto } from '@tabler/icons';
+import {
+    IconBrandTelegram,
+    IconBuildingStore,
+    IconMailbox,
+    IconPhoto,
+    IconFileAnalytics,
+    IconCalendarEvent,
+    IconBulb,
+    IconReceipt2
+} from '@tabler/icons';
+import StorefrontTwoToneIcon from '@material-ui/icons/StorefrontTwoTone';
+
 import User1 from 'assets/images/users/user-round.svg';
 
 // style constant
@@ -72,6 +83,12 @@ const useStyles = makeStyles((theme) => ({
         height: '24px',
         padding: '0 6px'
     },
+    listChipDefault: {
+        color: theme.palette.grey[500],
+        backgroundColor: theme.palette.grey[200],
+        height: '24px',
+        padding: '0 6px'
+    },
     listAvatarSuccess: {
         color: theme.palette.success.dark,
         backgroundColor: theme.palette.success.light,
@@ -83,6 +100,24 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.light,
         border: 'none',
         borderColor: theme.palette.primary.main
+    },
+    listAvatarSecondary: {
+        color: theme.palette.secondary.dark,
+        backgroundColor: theme.palette.secondary.light,
+        border: 'none',
+        borderColor: theme.palette.secondary.main
+    },
+    listAvatarWarning: {
+        color: theme.palette.warning.dark,
+        backgroundColor: theme.palette.warning.light,
+        border: 'none',
+        borderColor: theme.palette.warning.main
+    },
+    listAvatarError: {
+        color: theme.palette.error.dark,
+        backgroundColor: theme.palette.error.light,
+        border: 'none',
+        borderColor: theme.palette.error.main
     },
     listContainer: {
         paddingLeft: '56px'
@@ -102,188 +137,121 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const ShadowBox = () => {
+    const classes = useStyles();
+    const number = Math.floor(Math.random() * (5 - 1 + 1) + 1);
+    switch (number) {
+        case 1:
+            return (
+                <Avatar className={classes.listAvatarPrimary}>
+                    <IconFileAnalytics stroke={1.5} size="1.3rem" />
+                </Avatar>
+            );
+
+        case 2:
+            return (
+                <Avatar className={classes.listAvatarSecondary}>
+                    <IconCalendarEvent stroke={1.5} size="1.3rem" />
+                </Avatar>
+            );
+
+        case 3:
+            return (
+                <Avatar className={classes.listAvatarWarning}>
+                    <IconBulb stroke={1.5} size="1.3rem" />
+                </Avatar>
+            );
+
+        case 4:
+            return (
+                <Avatar className={classes.listAvatarPrimary}>
+                    <IconReceipt2 stroke={1.5} size="1.3rem" />
+                </Avatar>
+            );
+
+        case 5:
+            return (
+                <Avatar className={classes.listAvatarSuccess}>
+                    <StorefrontTwoToneIcon stroke={1.5} size="1.3rem" />
+                </Avatar>
+            );
+
+        default:
+            return (
+                <Avatar className={classes.listAvatarSuccess}>
+                    <StorefrontTwoToneIcon stroke={1.5} size="1.3rem" />
+                </Avatar>
+            );
+    }
+};
+
 // ===========================|| NOTIFICATION LIST ITEM ||=========================== //
 
-const NotificationList = () => {
+const NotificationList = (notificationData) => {
     const classes = useStyles();
+    console.log(notificationData);
 
     return (
         <List className={classes.navContainer}>
-            <div className={classes.itemAction}>
-                <ListItem alignItems="center" className={classes.listItem}>
-                    <ListItemAvatar>
-                        <Avatar alt="John Doe" src={User1} />
-                    </ListItemAvatar>
-                    <ListItemText primary={<Typography variant="subtitle1">John Doe</Typography>} />
-                    <ListItemSecondaryAction className={classes.listAction}>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item xs={12}>
-                                <Typography variant="caption" display="block" gutterBottom className={classes.actionColor}>
-                                    2 min ago
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </ListItemSecondaryAction>
-                </ListItem>
-                <Grid container direction="column" className={classes.listContainer}>
-                    <Grid item xs={12} className={classes.paddingBottom}>
-                        <Typography variant="subtitle2">It is a long established fact that a reader will be distracted</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Grid container>
-                            <Grid item>
-                                <Chip label="Unread" className={classes.listChipError} />
-                            </Grid>
-                            <Grid item>
-                                <Chip label="New" className={classes.listChipWarning} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </div>
-            <Divider className={classes.listDivider} />
-            <div className={classes.itemAction}>
-                <ListItem alignItems="center" className={classes.listItem}>
-                    <ListItemAvatar>
-                        <Avatar className={classes.listAvatarSuccess}>
-                            <IconBuildingStore stroke={1.5} size="1.3rem" />
-                        </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText primary={<Typography variant="subtitle1">Store Verification Done</Typography>} />
-                    <ListItemSecondaryAction className={classes.listAction}>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item xs={12}>
-                                <Typography variant="caption" display="block" gutterBottom className={classes.actionColor}>
-                                    2 min ago
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </ListItemSecondaryAction>
-                </ListItem>
-                <Grid container direction="column" className={classes.listContainer}>
-                    <Grid item xs={12} className={classes.paddingBottom}>
-                        <Typography variant="subtitle2">We have successfully received your request.</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Grid container>
-                            <Grid item>
-                                <Chip label="Unread" className={classes.listChipError} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </div>
-            <Divider className={classes.listDivider} />
-            <div className={classes.itemAction}>
-                <ListItem alignItems="center" className={classes.listItem}>
-                    <ListItemAvatar>
-                        <Avatar className={classes.listAvatarPrimary}>
-                            <IconMailbox stroke={1.5} size="1.3rem" />
-                        </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText primary={<Typography variant="subtitle1">Check Your Mail.</Typography>} />
-                    <ListItemSecondaryAction className={classes.listAction}>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item>
-                                <Typography variant="caption" display="block" gutterBottom className={classes.actionColor}>
-                                    2 min ago
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </ListItemSecondaryAction>
-                </ListItem>
-                <Grid container direction="column" className={classes.listContainer}>
-                    <Grid item xs={12} className={classes.paddingBottom}>
-                        <Typography variant="subtitle2">All done! Now check your inbox as you&apos;re in for a sweet treat!</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Grid container>
-                            <Grid item>
-                                <Button variant="contained" disableElevation>
-                                    Mail
-                                    <IconBrandTelegram stroke={1.5} size="1.3rem" className={classes.sendIcon} />
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </div>
-            <Divider className={classes.listDivider} />
-            <div className={classes.itemAction}>
-                <ListItem alignItems="center" className={classes.listItem}>
-                    <ListItemAvatar>
-                        <Avatar alt="John Doe" src={User1} />
-                    </ListItemAvatar>
-                    <ListItemText primary={<Typography variant="subtitle1">John Doe</Typography>} />
-                    <ListItemSecondaryAction className={classes.listAction}>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item xs={12}>
-                                <Typography variant="caption" display="block" gutterBottom className={classes.actionColor}>
-                                    2 min ago
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </ListItemSecondaryAction>
-                </ListItem>
-                <Grid container direction="column" className={classes.listContainer}>
-                    <Grid item xs={12} className={classes.paddingBottom}>
-                        <Typography component="span" variant="subtitle2">
-                            Uploaded two file on &nbsp;
-                            <Typography component="span" variant="h6">
-                                21 Jan 2020
-                            </Typography>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Grid container>
-                            <Grid item xs={12}>
-                                <Card className={classes.uploadCard}>
-                                    <CardContent>
-                                        <Grid container direction="column">
+            {notificationData.notificationData !== undefined && notificationData.notificationData.length > 0 ? (
+                <>
+                    {notificationData.notificationData.map((element) => (
+                        <>
+                            <div className={classes.itemAction}>
+                                <ListItem alignItems="center" className={classes.listItem}>
+                                    <ListItemAvatar>
+                                        <Avatar className={classes.listAvatarSuccess}>
+                                            <ShadowBox />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText primary={<Typography variant="subtitle1">{element.title}</Typography>} />
+                                    <ListItemSecondaryAction className={classes.listAction}>
+                                        <Grid container justifyContent="flex-end">
                                             <Grid item xs={12}>
-                                                <Stack direction="row" spacing={2}>
-                                                    <IconPhoto stroke={1.5} size="1.3rem" />
-                                                    <Typography variant="subtitle1">demo.jpg</Typography>
-                                                </Stack>
+                                                <Typography variant="caption" display="block" gutterBottom className={classes.actionColor}>
+                                                    2 min ago
+                                                </Typography>
                                             </Grid>
                                         </Grid>
-                                    </CardContent>
-                                </Card>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                                <Grid container direction="column" className={classes.listContainer}>
+                                    <Grid item xs={12} className={classes.paddingBottom}>
+                                        <Typography variant="subtitle2">{element.body}</Typography>
+                                    </Grid>
+                                    <Stack direction="row" spacing={1}>
+                                        {element.isRead ? (
+                                            <Chip size="small" label="read" className={classes.listChipDefault} />
+                                        ) : (
+                                            <Chip size="small" label="Unread" className={classes.listChipError} />
+                                        )}
+                                        {element.isNew ? <Chip size="small" label="New" className={classes.listChipWarning} /> : <></>}
+                                    </Stack>
+                                </Grid>
+                            </div>
+                            <Divider className={classes.listDivider} />
+                        </>
+                    ))}
+                </>
+            ) : (
+                <>
+                    <div className={classes.itemAction}>
+                        <ListItem alignItems="center" className={classes.listItem}>
+                            <ListItemAvatar>
+                                <Avatar className={classes.listAvatarError}>
+                                    <IconBuildingStore stroke={1.5} size="1.3rem" />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={<Typography variant="subtitle1">No Notification Available</Typography>} />
+                        </ListItem>
+                        <Grid container direction="column" className={classes.listContainer}>
+                            <Grid item xs={12} className={classes.paddingBottom}>
+                                <Typography variant="subtitle2">Currently you do not have any notifications.</Typography>
                             </Grid>
                         </Grid>
-                    </Grid>
-                </Grid>
-            </div>
-            <Divider className={classes.listDivider} />
-            <div className={classes.itemAction}>
-                <ListItem alignItems="center" className={classes.listItem}>
-                    <ListItemAvatar>
-                        <Avatar alt="John Doe" src={User1} />
-                    </ListItemAvatar>
-                    <ListItemText primary={<Typography variant="subtitle1">John Doe</Typography>} />
-                    <ListItemSecondaryAction className={classes.listAction}>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item xs={12}>
-                                <Typography variant="caption" display="block" gutterBottom className={classes.actionColor}>
-                                    2 min ago
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </ListItemSecondaryAction>
-                </ListItem>
-                <Grid container direction="column" className={classes.listContainer}>
-                    <Grid item xs={12} className={classes.paddingBottom}>
-                        <Typography variant="subtitle2">It is a long established fact that a reader will be distracted</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Grid container>
-                            <Grid item>
-                                <Chip label="Confirmation of Account." className={classes.listChipSuccess} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </div>
+                    </div>
+                </>
+            )}
         </List>
     );
 };

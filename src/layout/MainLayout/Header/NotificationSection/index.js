@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+// import { Link } from 'react-router-dom';
 
 // material-ui
 import { makeStyles, useTheme } from '@material-ui/styles';
@@ -33,6 +33,8 @@ import NotificationList from './NotificationList';
 // assets
 import { IconBell } from '@tabler/icons';
 
+import { getDatabase, ref, onValue, update } from 'firebase/database';
+import { useNavigate } from 'react-router-dom';
 // style constant
 const useStyles = makeStyles((theme) => ({
     ScrollHeight: {
@@ -56,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     },
     notificationChip: {
         color: theme.palette.background.default,
-        backgroundColor: theme.palette.warning.dark
+        backgroundColor: theme.palette.error.dark
     },
     divider: {
         marginTop: 0,
@@ -97,10 +99,6 @@ const status = [
     {
         value: 'unread',
         label: 'Unread'
-    },
-    {
-        value: 'other',
-        label: 'Other'
     }
 ];
 
@@ -110,10 +108,18 @@ const NotificationSection = () => {
     const classes = useStyles();
     const theme = useTheme();
     const matchesXs = useMediaQuery(theme.breakpoints.down('sm'));
+    const navigate = useNavigate();
 
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState('');
+    const [unReadCount, setUnReadCount] = React.useState(0);
     const anchorRef = React.useRef(null);
+
+    const userId = 1;
+    const db = getDatabase();
+
+    const [notifications, setNotifications] = React.useState();
+    const [selectNotifications, setSelectNotifications] = React.useState();
 
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
@@ -126,6 +132,11 @@ const NotificationSection = () => {
         setOpen(false);
     };
 
+    const handleViewAll = (event) => {
+        navigate('/pages/notification');
+        setOpen(false);
+    };
+
     const prevOpen = React.useRef(open);
     React.useEffect(() => {
         if (prevOpen.current === true && open === false) {
@@ -135,8 +146,62 @@ const NotificationSection = () => {
     }, [open]);
 
     const handleChange = (event) => {
+        const newNotificationArr = [];
         setValue(event.target.value);
+        if (event.target.value === 'new') {
+            notifications.forEach((element) => {
+                if (element.isNew) {
+                    newNotificationArr.push(element);
+                }
+            });
+            setSelectNotifications(newNotificationArr);
+        } else if (event.target.value === 'unread') {
+            notifications.forEach((element) => {
+                if (!element.isRead) {
+                    newNotificationArr.push(element);
+                }
+            });
+            setSelectNotifications(newNotificationArr);
+        } else if (event.target.value === 'all') {
+            notifications.forEach((element) => {
+                newNotificationArr.push(element);
+            });
+            setSelectNotifications(newNotificationArr);
+        }
     };
+
+    function getNotifications() {
+        const db = getDatabase();
+        const userRef = ref(db, `/users/${userId}/notifications`);
+        onValue(userRef, async (snapshot) => {
+            const notificationArr = [];
+            let tempUnReadCount = 0;
+            const data = snapshot.val();
+            await snapshot.forEach((childSnapshot) => {
+                const childKey = childSnapshot.key;
+                const childData = childSnapshot.val();
+                childData.key = childKey;
+                if (!childData.isRead) {
+                    tempUnReadCount += 1;
+                }
+                notificationArr.unshift(childData);
+                console.log(childData);
+
+                // ...
+            });
+
+            setNotifications(notificationArr);
+            setSelectNotifications(notificationArr);
+            setUnReadCount(tempUnReadCount);
+            //   updateStarCount(postElement, data);
+            console.log(notificationArr);
+            console.log(data);
+        });
+    }
+
+    useEffect(async () => {
+        getNotifications();
+    }, []);
 
     return (
         <>
@@ -186,13 +251,12 @@ const NotificationSection = () => {
                                                         <Grid item>
                                                             <Stack direction="row" spacing={2}>
                                                                 <Typography variant="subtitle1">All Notification</Typography>
-                                                                <Chip size="small" label="01" className={classes.notificationChip} />
+                                                                <Chip
+                                                                    size="small"
+                                                                    label={unReadCount}
+                                                                    className={classes.notificationChip}
+                                                                />
                                                             </Stack>
-                                                        </Grid>
-                                                        <Grid item>
-                                                            <Typography component={Link} to="#" variant="subtitle2" color="primary">
-                                                                Mark as all read
-                                                            </Typography>
                                                         </Grid>
                                                     </Grid>
                                                 </div>
@@ -224,7 +288,7 @@ const NotificationSection = () => {
                                                             <Divider className={classes.divider} />
                                                         </Grid>
                                                         <Grid item xs={12}>
-                                                            <NotificationList />
+                                                            <NotificationList notificationData={selectNotifications} />
                                                         </Grid>
                                                     </Grid>
                                                 </PerfectScrollbar>
@@ -233,7 +297,7 @@ const NotificationSection = () => {
                                     </CardContent>
                                     <Divider />
                                     <CardActions className={classes.cardAction}>
-                                        <Button size="small" disableElevation>
+                                        <Button size="small" onClick={handleViewAll} disableElevation>
                                             View All
                                         </Button>
                                     </CardActions>

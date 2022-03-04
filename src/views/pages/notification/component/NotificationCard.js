@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
             position: 'absolute',
             width: '210px',
             height: '210px',
-            background: `linear-gradient(210.04deg, ${theme.palette.secondary[200]} -50.94%, rgba(144, 202, 249, 0) 83.49%)`,
+            background: `linear-gradient(210.04deg, ${theme.palette.primary.dark} -50.94%, rgba(144, 202, 249, 0) 83.49%)`,
             borderRadius: '50%',
             top: '-30px',
             right: '-120px'
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
             position: 'absolute',
             width: '210px',
             height: '210px',
-            background: `linear-gradient(140.9deg, ${theme.palette.secondary[200]} -14.02%, rgba(144, 202, 249, 0) 70.50%)`,
+            background: `linear-gradient(140.9deg, ${theme.palette.primary.dark} -14.02%, rgba(144, 202, 249, 0) 70.50%)`,
             borderRadius: '50%',
             top: '-160px',
             right: '-60px'
@@ -68,8 +68,8 @@ const useStyles = makeStyles((theme) => ({
     avatar: {
         ...theme.typography.commonAvatar,
         ...theme.typography.largeAvatar,
-        backgroundColor: theme.palette.warning.light,
-        color: theme.palette.warning.dark
+        backgroundColor: theme.palette.primary.light,
+        color: theme.palette.primary.dark
     },
     secondary: {
         color: theme.palette.grey[500]
@@ -105,25 +105,29 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ShadowBox = ({ image, name }) => {
+const ShadowBox = () => {
     theme = useTheme();
+    const number = Math.floor(Math.random() * (5 - 1 + 1) + 1);
+    switch (number) {
+        case 1:
+            return <IconFileAnalytics stroke={1.5} size="1.3rem" />;
 
-    return (
-        <Box
-            sx={{
-                height: 70,
-                width: 70,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                // pt: 3,
-                bgcolor: theme.palette.primary.light,
-                color: theme.palette.grey[800]
-            }}
-        >
-            <CardMedia component="img" image="https://npark-fitness-bucket.s3.us-east-2.amazonaws.com/dp.jpg" alt="green iguana" />
-        </Box>
-    );
+        case 2:
+            return <IconCalendarEvent stroke={1.5} size="1.3rem" />;
+
+        case 3:
+            return <IconBulb stroke={1.5} size="1.3rem" />;
+
+        case 4:
+            return <IconReceipt2 stroke={1.5} size="1.3rem" />;
+
+        case 5:
+            return <StorefrontTwoToneIcon stroke={1.5} size="1.3rem" />;
+
+        default:
+            return <CardMedia component="img" image="https://npark-fitness-bucket.s3.us-east-2.amazonaws.com/dp.jpg" alt="green iguana" />;
+        // code block
+    }
 };
 
 // ===========================|| PROFILE MENU - UPGRADE PLAN CARD ||=========================== //
