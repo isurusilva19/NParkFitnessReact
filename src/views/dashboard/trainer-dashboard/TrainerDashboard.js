@@ -7,6 +7,7 @@ import { Grid } from '@material-ui/core';
 import IncomeCard from '../dashboard-component/IncomeCard';
 import SmallDarkCard from '../dashboard-component/SmallDarkCard';
 import AttendanceCard from '../dashboard-component/AttendanceCard';
+import MemberCard from '../dashboard-component/MemberCard';
 import SmallLightCard from '../dashboard-component/SmallLightCard';
 import ServiceCard from '../dashboard-component/ServiceCard';
 // import PopularCard from '../Default/PopularCard';
@@ -160,8 +161,8 @@ const TrainerDashboard = () => {
                                     <Grid item sm={6} xs={12} md={12} lg={12}>
                                         <SmallLightCard
                                             isLoading={isLoading}
-                                            amount={`${exMemberCount} Membership`}
-                                            title="Total Expired Memberships"
+                                            amount={`${exMemberCount} Schedules`}
+                                            title="Total Pending Schedules"
                                         />
                                     </Grid>
                                 </Grid>
@@ -170,8 +171,30 @@ const TrainerDashboard = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
-                            <Grid item xs={12} md={12}>
-                                <TotalGrowthBarChart isLoading={isLoading} incomeData={incomeCount} />
+                            <Grid item xs={12} sm={12} md={12} lg={4}>
+                                <MemberCard isLoading={isLoading} data={serviceData} />
+                            </Grid>
+
+                            <Grid item xs={12} sm={12} md={12} lg={4}>
+                                <ServiceCard isLoading={isLoading} data={serviceData} />
+                            </Grid>
+                            <Grid item lg={4} md={12} sm={12} xs={12}>
+                                <Grid container spacing={gridSpacing}>
+                                    <Grid item sm={6} xs={12} md={12} lg={12}>
+                                        <SmallDarkCard
+                                            isLoading={isLoading}
+                                            amount={`${serviceCount} Diet Plan`}
+                                            title="Total Pending Diet Plan"
+                                        />
+                                    </Grid>
+                                    <Grid item sm={6} xs={12} md={12} lg={12}>
+                                        <SmallLightCard
+                                            isLoading={isLoading}
+                                            amount={`${exMemberCount} Membership`}
+                                            title="Total Expired Memberships"
+                                        />
+                                    </Grid>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
