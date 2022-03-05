@@ -11,7 +11,8 @@ import {
     IconBuildingArch,
     IconUsers,
     IconReportAnalytics,
-    IconReceipt
+    IconReceipt,
+    IconToolsKitchen2
 } from '@tabler/icons';
 
 // constant
@@ -79,11 +80,11 @@ const pages = {
             breadcrumbs: false
         },
         {
-            id: 'customerPayment2',
-            title: 'Gym Managment',
+            id: 'calorieCal',
+            title: 'Calorie Calculator',
             type: 'item',
-            url: '/sample-page',
-            icon: IconBuildingCommunity,
+            url: '/pages/calorieCal',
+            icon: IconToolsKitchen2,
             breadcrumbs: false
         },
         {

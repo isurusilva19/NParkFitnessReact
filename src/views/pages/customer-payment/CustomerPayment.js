@@ -406,7 +406,7 @@ const CustomerPayment = ({ memberId }) => {
                                     Expire Date
                                 </CustomTypography>
                                 <CustomTypography style={{ maxWidth: '100px', minWidth: '100px' }} variant="subtitle1">
-                                    {memberData.member.expireDate}
+                                    {memberData.member.expireDate.slice(0, 10)}
                                 </CustomTypography>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '5px' }}>

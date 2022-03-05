@@ -14,6 +14,7 @@ const DashboardAdmin = Loadable(lazy(() => import('views/dashboard/admin-dashboa
 const CustomerPayment = Loadable(lazy(() => import('views/pages/customer-payment/CustomerPayment')));
 const Subscription = Loadable(lazy(() => import('views/pages/subscription/Subscription')));
 const Notification = Loadable(lazy(() => import('views/pages/notification/Notification')));
+const CalorieCal = Loadable(lazy(() => import('views/pages/calorie-calculator/CalorieCalculator')));
 
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
@@ -66,6 +67,10 @@ const MainRoutes = {
         {
             path: '/pages/notification',
             element: <Notification />
+        },
+        {
+            path: '/pages/calorieCal',
+            element: <CalorieCal />
         },
         {
             path: '/utils/util-typography',

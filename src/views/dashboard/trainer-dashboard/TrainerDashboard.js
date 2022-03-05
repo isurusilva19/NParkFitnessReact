@@ -40,36 +40,28 @@ const TrainerDashboard = () => {
     const [serviceCount, setServiceCount] = useState();
     const [exMemberCount, setExMemberCount] = useState();
     const [trainerCount, setTrainerCount] = useState();
-    const [managerCount, setManagerCount] = useState();
+    const [memberData, setMemberData] = useState();
     const [attendanceCount, setAttendanceCount] = useState();
     const [incomeCount, setIncomeCount] = useState();
     const [serviceData, setServiceData] = useState();
+    const [pendingScheduleCount, setPendingScheduleCount] = useState();
+    const [pendingDietCount, setPendingDietCount] = useState();
 
     const branchId = 1;
+    const userId = 4;
 
-    function getManagerDashboard() {
+    function getTrainerDashboard() {
         // let arr = [];
 
         HttpCommon.get(`/api/serviceType/getServiceTypeByBranchId/${branchId}`).then((response1) => {
             console.log(response1.data.data);
             setServiceData(response1.data.data);
-            HttpCommon.get(`api/dashboard/getManagerDashboardData/${branchId}`).then(async (response) => {
+            HttpCommon.post(`api/dashboard/getMemberDetails/${userId}`, { branchId }).then(async (response) => {
                 console.log(response.data.data);
-                console.log(response.data.data.staffCount);
                 setMemberCount(response.data.data.memberCount);
                 setServiceCount(response.data.data.serviceCount);
                 setExMemberCount(response.data.data.exMemberCount);
-
-                await Promise.all(
-                    await response.data.data.staffCount.map((element) => {
-                        if (element.type === 'Manager') {
-                            setManagerCount(element.count);
-                        } else if (element.type === 'Trainer') {
-                            setTrainerCount(element.count);
-                        }
-                        return 0;
-                    })
-                );
+                setMemberData(response.data.data.memberData);
 
                 let body = {
                     chartMonthData: [],
@@ -88,6 +80,7 @@ const TrainerDashboard = () => {
                             return monthArr.push(element.count);
                         })
                     );
+
                     await Promise.all(
                         response.data.data.attendanceCount.attendanceYear.map((element) => {
                             yearCount += element.count;
@@ -99,16 +92,30 @@ const TrainerDashboard = () => {
                 }
 
                 setAttendanceCount(body);
-                const incomeArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                let tempScheduleCount = 0;
+                let tempDietCount = 0;
                 await Promise.all(
-                    response.data.data.incomeCount.map((element) => {
-                        const month = parseInt(element.date.slice(5, 7), 10);
-                        incomeArr[month - 1] = element.totalAmount;
+                    response.data.data.memberData.map((element) => {
+                        if (!element.isDietAvailable) {
+                            tempDietCount += 1;
+                        }
+                        if (element.scheduleExpireDate !== null) {
+                            const d1 = Date.parse(element.scheduleExpireDate);
+                            const today = new Date().toISOString().slice(0, 10);
+                            console.log('element.scheduleExpireDate<today');
+                            console.log(element.scheduleExpireDate < today);
+                            if (element.scheduleExpireDate < today) {
+                                tempScheduleCount += 1;
+                            }
+                        } else {
+                            tempScheduleCount += 1;
+                        }
                         return 0;
                     })
                 );
-                console.log(incomeArr);
-                setIncomeCount(incomeArr);
+                setPendingDietCount(tempDietCount);
+                setPendingScheduleCount(tempScheduleCount);
+
                 console.log('Is It Done2');
 
                 setDataLoading(false);
@@ -118,12 +125,8 @@ const TrainerDashboard = () => {
     }
 
     useEffect(() => {
-        getManagerDashboard();
+        getTrainerDashboard();
     }, []);
-
-    useEffect(() => {
-        console.log('Is It Done');
-    }, [incomeCount]);
 
     return (
         <>
@@ -144,7 +147,7 @@ const TrainerDashboard = () => {
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item lg={4} md={6} sm={6} xs={12}>
-                                <IncomeCard isLoading={isLoading} amount={memberCount} title="Total Member Count" />
+                                <IncomeCard isLoading={isLoading} amount={memberCount} title="Total Assigned Member Count" />
                             </Grid>
                             <Grid item lg={4} md={6} sm={6} xs={12}>
                                 <AttendanceCard isLoading={isLoading} data={attendanceCount} />
@@ -161,7 +164,7 @@ const TrainerDashboard = () => {
                                     <Grid item sm={6} xs={12} md={12} lg={12}>
                                         <SmallLightCard
                                             isLoading={isLoading}
-                                            amount={`${exMemberCount} Schedules`}
+                                            amount={`${pendingScheduleCount} Schedules`}
                                             title="Total Pending Schedules"
                                         />
                                     </Grid>
@@ -172,7 +175,7 @@ const TrainerDashboard = () => {
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item xs={12} sm={12} md={12} lg={4}>
-                                <MemberCard isLoading={isLoading} data={serviceData} />
+                                <MemberCard isLoading={isLoading} data={memberData} />
                             </Grid>
 
                             <Grid item xs={12} sm={12} md={12} lg={4}>
@@ -183,7 +186,7 @@ const TrainerDashboard = () => {
                                     <Grid item sm={6} xs={12} md={12} lg={12}>
                                         <SmallDarkCard
                                             isLoading={isLoading}
-                                            amount={`${serviceCount} Diet Plan`}
+                                            amount={`${pendingDietCount} Diet Plan`}
                                             title="Total Pending Diet Plan"
                                         />
                                     </Grid>

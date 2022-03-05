@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
         height: '24px',
         padding: '0 6px',
         marginRight: '5px',
+        marginBottom: '5px',
         fontWeight: '500'
     },
     avatarSuccess: {
@@ -100,9 +101,30 @@ const useStyles = makeStyles((theme) => ({
 
 const MemberCard = ({ isLoading, data }) => {
     const classes = useStyles();
-
+    console.log(data);
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [isSchedule, setIsSchedule] = React.useState(false);
+    // if (data !== undefined && data.length > 0) {
+    //     if (element.scheduleExpireDate !== null) {
+    //         const d1 = Date.parse(element.scheduleExpireDate);
+    //         const today = new Date().toISOString().slice(0, 10);
+    //         console.log(`${d1}<${today}`);
+    //         console.log(d1 < today);
+    //         if (d1 < today) {
+    //             setIsSchedule(true);
+    //         }
+    //     }
+    // }
 
+    function scheduleStatus(element) {
+        const today = new Date().toISOString().slice(0, 10);
+        console.log(`${element.scheduleExpireDate}>${today}`);
+        console.log(element.scheduleExpireDate > today);
+        if (element.scheduleExpireDate > today) {
+            return true;
+        }
+        return false;
+    }
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -159,49 +181,98 @@ const MemberCard = ({ isLoading, data }) => {
                                 <BajajAreaChartCard />
                             </Grid> */}
                             <Grid item xs={12}>
-                                {data !== undefined && data.serviceType.length > 0 ? (
+                                {data !== undefined && data.length > 0 ? (
                                     <>
-                                        {data.serviceType.map((element) => (
+                                        {data.map((element) => (
                                             <>
                                                 <Grid container direction="row" justifyContent="space-between">
                                                     <div style={{ display: 'flex' }}>
                                                         <ListItemAvatar>
-                                                            <Avatar src={User1} variant="rounded" className={classes.avatarPrimary} />
+                                                            {element.user.image !== null ? (
+                                                                <Avatar
+                                                                    src={element.user.image}
+                                                                    variant="rounded"
+                                                                    className={classes.avatarPrimary}
+                                                                />
+                                                            ) : (
+                                                                <Avatar
+                                                                    src="https://npark-fitness-bucket.s3.us-east-2.amazonaws.com/dp.jpg"
+                                                                    variant="rounded"
+                                                                    className={classes.avatarPrimary}
+                                                                />
+                                                            )}
                                                         </ListItemAvatar>
 
                                                         <div style={{ width: 10 }} />
                                                         <Grid item direction="column">
                                                             <Grid container direction="row" justifyContent="flex-start">
-                                                                <Grid item lg={12} md={6} sm={6} xs={12}>
+                                                                <Grid item xs={12}>
                                                                     <Typography variant="subtitle1" color="inherit">
-                                                                        Induwara
+                                                                        {element.user.firstName}
                                                                     </Typography>
                                                                 </Grid>
-                                                                <Grid item lg={12} md={6} sm={6} xs={12}>
+                                                                <Grid item xs={12}>
                                                                     <Typography variant="subtitle1" color="inherit">
-                                                                        Nagodavithana
+                                                                        {element.user.lastName}
                                                                     </Typography>
                                                                 </Grid>
                                                             </Grid>
 
                                                             <Grid container direction="row" justifyContent="flex-start">
-                                                                <Grid item lg={6} md={6} sm={6} xs={12}>
-                                                                    <Chip
-                                                                        size="small"
-                                                                        label="DietPlan"
-                                                                        className={classes.listChipSuccess}
-                                                                    />
-                                                                </Grid>
-                                                                <Grid item lg={6} md={6} sm={6} xs={12}>
-                                                                    <Chip size="small" label="Schedule" className={classes.listChipError} />
-                                                                </Grid>
+                                                                {element.isDietAvailable ? (
+                                                                    <Grid item lg={6} md={6} sm={6} xs={12}>
+                                                                        <Chip
+                                                                            size="small"
+                                                                            label="DietPlan"
+                                                                            className={classes.listChipSuccess}
+                                                                        />
+                                                                    </Grid>
+                                                                ) : (
+                                                                    <Grid item lg={6} md={6} sm={6} xs={12}>
+                                                                        <Chip
+                                                                            size="small"
+                                                                            label="DietPlan"
+                                                                            className={classes.listChipError}
+                                                                        />
+                                                                    </Grid>
+                                                                )}
+
+                                                                {element.scheduleExpireDate !== null ? (
+                                                                    <>
+                                                                        {scheduleStatus(element) ? (
+                                                                            <Grid item lg={6} md={6} sm={6} xs={12}>
+                                                                                <Chip
+                                                                                    size="small"
+                                                                                    label="Schedule"
+                                                                                    className={classes.listChipSuccess}
+                                                                                />
+                                                                            </Grid>
+                                                                        ) : (
+                                                                            <Grid item lg={6} md={6} sm={6} xs={12}>
+                                                                                <Chip
+                                                                                    size="small"
+                                                                                    label="Schedule"
+                                                                                    className={classes.listChipError}
+                                                                                />
+                                                                            </Grid>
+                                                                        )}
+                                                                    </>
+                                                                ) : (
+                                                                    <Grid item lg={6} md={6} sm={6} xs={12}>
+                                                                        <Chip
+                                                                            size="small"
+                                                                            label="Schedule"
+                                                                            className={classes.listChipError}
+                                                                        />
+                                                                    </Grid>
+                                                                )}
                                                             </Grid>
                                                         </Grid>
                                                     </div>
 
                                                     <Grid item>
                                                         <Typography variant="subtitle2" textAlign="center" className={classes.secondary}>
-                                                            ID(12053)
+                                                            MemberID({element.id})
                                                         </Typography>
                                                     </Grid>
                                                 </Grid>
