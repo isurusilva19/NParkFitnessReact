@@ -239,7 +239,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 
                 <Button disableElevation onClick={handleAddFormSubmit} size="medium" variant="contained" color="secondary">
-                            Add Gym
+                            Add Gyms
                         </Button>
                 </MainCard>
 
