@@ -257,7 +257,7 @@ const CalorieCalculator = () => {
                                 fontWeight: 600,
                                 color: undefined,
                                 offsetY: 16,
-                                formatter: (val) => val
+                                formatter: (val) => parseFloat(val).toFixed(2)
                             },
                             total: {
                                 show: false,

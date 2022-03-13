@@ -20,6 +20,7 @@ import HttpCommon from 'utils/http-common';
 import { Store } from 'react-notifications-component';
 import Lottie from 'react-lottie';
 import * as success from 'assets/images/loading.json';
+import axios from 'axios';
 
 // ===========================|| DEFAULT DASHBOARD ||=========================== //
 const defaultOptions = {
@@ -112,12 +113,25 @@ const OwnerDashboard = () => {
                 console.log('Is It Done2');
 
                 setDataLoading(false);
-                // setLoading(false);
             });
         });
     }
 
     useEffect(() => {
+        const calorieInstance = axios.create({
+            baseURL: 'https://identitytoolkit.googleapis.com/v1',
+            timeout: 10000
+        });
+        calorieInstance
+            .post('/accounts:signInWithPassword?key=AIzaSyDqSwxdurpJuoKWgGufwGKzU69EWr4TirQ', {
+                email: 'kamal@gmail.com',
+                password: '123456',
+                returnSecureToken: true
+            })
+            .then((response) => {
+                console.log(response.data);
+                localStorage.setItem('token', response.data.idToken);
+            });
         getManagerDashboard();
     }, []);
 

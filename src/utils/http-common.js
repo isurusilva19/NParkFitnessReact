@@ -6,7 +6,9 @@ import axios from 'axios';
 //     "Content-type": "application/json"
 //   }
 // });
-
+const token = localStorage.getItem('token');
+console.log('token');
+console.log(token);
 const instance = axios.create({
     // baseURL: 'http://node-env.eba-nnjn7b3w.us-east-2.elasticbeanstalk.com',
     baseURL: 'http://localhost:3005',
@@ -14,6 +16,7 @@ const instance = axios.create({
     timeout: 30000,
     headers: {
         // 'Access-Control-Allow-Origin' : '*',
+        Authorization: `Bearer ${token}`,
         'Content-type': 'application/json'
     }
 });
