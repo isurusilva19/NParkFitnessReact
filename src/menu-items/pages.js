@@ -76,7 +76,7 @@ const pages = {
             title: 'Notification',
             type: 'item',
             url: '/pages/notification',
-            icon: IconBrandCodesandbox,
+            icon: IconBellRinging,
             breadcrumbs: false
         },
         {
