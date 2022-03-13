@@ -165,9 +165,6 @@ const ShadowBox = ({ image, name }) => {
     );
 };
 
-// ShadowBox.propTypes = {
-//     shadow: PropTypes.string.isRequired
-// };
 
 const ActivityCard = ({ cardDetails }) => {
     theme = useTheme();
