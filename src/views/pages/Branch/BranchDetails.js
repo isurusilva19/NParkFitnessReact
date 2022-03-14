@@ -55,16 +55,13 @@ function BranchDetails(){
     useEffect(() => {
         api.get('/api/gym')
         .then((res) => {
-            console.log(res.data);
-            var l=res.data[0];
-            console.log(l);
+            console.log(res.data.data);
             res.data.data.map((row) => gymArray.push({ label: row.name, value: row.id }));
-          // console.log("j"+gymArray[1].name);
         })
         .catch((err) => {
             console.log(err);
         })
-    })
+    },[])
 
     const [contacts, setContacts] = React.useState();
 
