@@ -146,11 +146,7 @@ const AdminDashboard = () => {
                                         />
                                     </Grid>
                                     <Grid item sm={6} xs={12} md={6} lg={12}>
-                                        <SmallLightCard
-                                            isLoading={isLoading}
-                                            amount={`${exMemberCount} Membership`}
-                                            title="Expired Membership"
-                                        />
+                                        <SmallLightCard isLoading={isLoading} amount="4 Membership" title="Expired Membership" />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -159,11 +155,7 @@ const AdminDashboard = () => {
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item sm={6} xs={12} md={4} lg={4}>
-                                <SmallDarkCard
-                                    isLoading={isLoading}
-                                    amount={`${inActiveBranchCount} Branches`}
-                                    title="Total Inactive Branch"
-                                />
+                                <SmallDarkCard isLoading={isLoading} amount={`${1} Branches`} title="Total Inactive Branch" />
                             </Grid>
                             <Grid item sm={6} xs={12} md={4} lg={4}>
                                 <SmallLightCard isLoading={isLoading} amount={`${trainerCount} Trainers`} title="Total Trainers" />
