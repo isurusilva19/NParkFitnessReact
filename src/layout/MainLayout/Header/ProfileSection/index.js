@@ -30,6 +30,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 import UpgradePlanCard from './UpgradePlanCard';
+import { useNavigate } from 'react-router';
 
 // assets
 import { IconLogout, IconSearch, IconSettings } from '@tabler/icons';
@@ -116,6 +117,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ProfileSection = () => {
     const classes = useStyles();
+    const navigate = useNavigate();
     const theme = useTheme();
     const customization = useSelector((state) => state.customization);
 
@@ -126,9 +128,6 @@ const ProfileSection = () => {
 
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
-    const handleLogout = async () => {
-        console.error('Logout');
-    };
 
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
@@ -139,6 +138,11 @@ const ProfileSection = () => {
         }
 
         setOpen(false);
+    };
+
+    const handleLogOut = (event) => {
+        localStorage.clear();
+        navigate('/pages/login/login3', { replace: true });
     };
 
     const prevOpen = React.useRef(open);
@@ -270,7 +274,7 @@ const ProfileSection = () => {
                                                     className={classes.listItem}
                                                     sx={{ borderRadius: `${customization.borderRadius}px` }}
                                                     selected={selectedIndex === 4}
-                                                    onClick={handleLogout}
+                                                    onClick={handleLogOut}
                                                 >
                                                     <ListItemIcon>
                                                         <IconLogout stroke={1.5} size="1.3rem" />

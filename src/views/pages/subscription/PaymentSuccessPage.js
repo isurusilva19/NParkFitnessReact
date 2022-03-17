@@ -8,7 +8,6 @@ import { Card, Button, Box, Divider, Grid, Stack, Typography, useMediaQuery } fr
 // project imports
 import AuthWrapper1 from '../authentication/AuthWrapper1';
 import AuthCardWrapper from '../authentication/AuthCardWrapper';
-import FirebaseLogin from '../authentication/firebase-forms/FirebaseLogin';
 import Logo from 'ui-component/Logo';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 import SubCard from 'ui-component/cards/SubCard';
