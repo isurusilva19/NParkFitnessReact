@@ -1,14 +1,13 @@
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { store } from '../store/index';
 
-// export default axios.create({
-//   baseURL: "http://localhost:5000/api/",
-//   headers: {
-//     "Content-type": "application/json"
-//   }
-// });
-const token = localStorage.getItem('token');
-console.log('token');
-console.log(token);
+// const { token } = store.getState();
+
+// // const token = customization.token;
+// console.log('token');
+// console.log(token);
+// console.log(store.getState().token);
 const instance = axios.create({
     // baseURL: 'http://node-env.eba-pakmdcpw.us-east-2.elasticbeanstalk.com/',
     baseURL: 'http://localhost:3005',
@@ -16,9 +15,40 @@ const instance = axios.create({
     timeout: 30000,
     headers: {
         // 'Access-Control-Allow-Origin' : '*',
-        Authorization: `Bearer ${token}`,
+        // Authorization: `Bearer ${token}`,
         'Content-type': 'application/json'
     }
 });
+
+instance.interceptors.request.use(
+    (config) => {
+        // Do something before request is sent
+        const token = localStorage.getItem('token');
+        console.log('token');
+        console.log(token);
+        config.headers.Authorization = `Bearer ${token}`;
+        return config;
+    },
+    (error) => {
+        // Do something with request error
+        console.log(error);
+        return Promise.reject(error);
+    }
+);
+
+instance.interceptors.response.use(
+    (response) => {
+        // Any status code that lie within the range of 2xx cause this function to trigger
+        // Do something with response data
+        console.log(response);
+        return response;
+    },
+    (error) => {
+        // Any status codes that falls outside the range of 2xx cause this function to trigger
+        // Do something with response error
+        console.log(error);
+        return Promise.reject(error);
+    }
+);
 
 export default instance;

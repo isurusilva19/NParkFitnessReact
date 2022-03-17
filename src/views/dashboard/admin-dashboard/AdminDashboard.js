@@ -22,6 +22,7 @@ import Lottie from 'react-lottie';
 import * as success from 'assets/images/loading.json';
 import BlueCard from '../dashboard-component/BlueCard';
 import SubTypeCard from '../dashboard-component/SubTypeCard';
+import { useSelector } from 'react-redux';
 
 // ===========================|| DEFAULT DASHBOARD ||=========================== //
 const defaultOptions = {
@@ -46,7 +47,7 @@ const AdminDashboard = () => {
     const [gymCount, setGymCount] = useState();
     const [incomeCount, setIncomeCount] = useState();
     const [subTypeData, setSubTypeData] = useState();
-
+    const customization = useSelector((state) => state.customization);
     function getAdminDashboard() {
         // let arr = [];
 
@@ -109,6 +110,8 @@ const AdminDashboard = () => {
     }
 
     useEffect(() => {
+        console.log('customization.token');
+        console.log(customization.token);
         getAdminDashboard();
     }, []);
 

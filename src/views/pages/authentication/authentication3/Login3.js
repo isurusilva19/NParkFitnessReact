@@ -1,24 +1,25 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
 // material-ui
-import { useTheme } from '@material-ui/core/styles';
-import { Divider, Grid, Stack, Typography, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@mui/material/styles';
+import { Divider, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
 
 // project imports
 import AuthWrapper1 from '../AuthWrapper1';
 import AuthCardWrapper from '../AuthCardWrapper';
-import FirebaseLogin from '../firebase-forms/FirebaseLogin';
+import AuthLogin from '../auth-forms/AuthLogin';
 import Logo from 'ui-component/Logo';
 import AuthFooter from 'ui-component/cards/AuthFooter';
+import HttpCommon from 'utils/http-common';
 
 // assets
 
-//= ===============================|| AUTH3 - LOGIN ||================================//
+// ================================|| AUTH3 - LOGIN ||================================ //
 
 const Login = () => {
     const theme = useTheme();
-    const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
+    const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
 
     return (
         <AuthWrapper1>
@@ -28,11 +29,7 @@ const Login = () => {
                         <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
                             <AuthCardWrapper>
                                 <Grid container spacing={2} alignItems="center" justifyContent="center">
-                                    <Grid item sx={{ mb: 3 }}>
-                                        <RouterLink to="#">
-                                            <Logo />
-                                        </RouterLink>
-                                    </Grid>
+                                    <Grid item sx={{ mb: 3 }} />
                                     <Grid item xs={12}>
                                         <Grid
                                             container
@@ -47,9 +44,15 @@ const Login = () => {
                                                         gutterBottom
                                                         variant={matchDownSM ? 'h3' : 'h2'}
                                                     >
-                                                        Hi, Welcome Back
+                                                        Hi, Welcome Back to
+                                                        <br />
+                                                        <i>NPark Fitness</i>
                                                     </Typography>
-                                                    <Typography variant="caption" fontSize="16px" textAlign={matchDownSM ? 'center' : ''}>
+                                                    <Typography
+                                                        variant="caption"
+                                                        fontSize="16px"
+                                                        textAlign={matchDownSM ? 'center' : 'inherit'}
+                                                    >
                                                         Enter your credentials to continue
                                                     </Typography>
                                                 </Stack>
@@ -57,7 +60,7 @@ const Login = () => {
                                         </Grid>
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <FirebaseLogin login={3} />
+                                        <AuthLogin />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Divider />
@@ -65,7 +68,7 @@ const Login = () => {
                                     <Grid item xs={12}>
                                         <Grid item container direction="column" alignItems="center" xs={12}>
                                             <Typography
-                                                component={RouterLink}
+                                                component={Link}
                                                 to="/pages/register/register3"
                                                 variant="subtitle1"
                                                 sx={{ textDecoration: 'none' }}
