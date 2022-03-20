@@ -142,7 +142,7 @@ const ProfileSection = () => {
 
     const handleLogOut = (event) => {
         localStorage.clear();
-        navigate('/pages/login/login3', { replace: true });
+        navigate('/', { replace: true });
     };
 
     const prevOpen = React.useRef(open);

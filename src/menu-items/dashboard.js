@@ -18,7 +18,7 @@ const dashboard = {
             id: 'default',
             title: 'Admin Dashboard',
             type: 'item',
-            url: '/dashboard/admin',
+            url: '/pages/dashboard/admin',
             icon: icons.IconDashboard,
             breadcrumbs: false
         },
@@ -26,7 +26,7 @@ const dashboard = {
             id: 'owner',
             title: 'Owner Dashboard',
             type: 'item',
-            url: '/dashboard/owner',
+            url: '/pages/dashboard/owner',
             icon: icons.IconDashboard,
             breadcrumbs: false
         },
@@ -34,7 +34,7 @@ const dashboard = {
             id: 'manager',
             title: 'Manager Dashboard',
             type: 'item',
-            url: '/dashboard/manager',
+            url: '/pages/dashboard/manager',
             icon: icons.IconDashboard,
             breadcrumbs: false
         },
@@ -42,7 +42,7 @@ const dashboard = {
             id: 'trainer',
             title: 'Trainer Dashboard',
             type: 'item',
-            url: '/dashboard/trainer',
+            url: '/pages/dashboard/trainer',
             icon: icons.IconDashboard,
             breadcrumbs: false
         }

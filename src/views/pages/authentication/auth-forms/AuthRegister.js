@@ -37,12 +37,13 @@ import { Store } from 'react-notifications-component';
 import { useNavigate } from 'react-router';
 
 import Lottie from 'react-lottie';
-import * as success from 'assets/images/loading.json';
+import * as success from 'assets/images/sign-in.json';
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import app from './firebase';
 import { getAuth, createUserWithEmailAndPassword, IdTokenResult } from 'firebase/auth';
+import { Step, StepButton, Stepper } from '@material-ui/core';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -57,6 +58,8 @@ const defaultOptions = {
         preserveAspectRatio: 'xMidYMid slice'
     }
 };
+
+const steps = ['Personal Details', 'Contact Details', 'Finished'];
 
 const FirebaseRegister = ({ ...others }) => {
     const navigate = useNavigate();
@@ -91,6 +94,54 @@ const FirebaseRegister = ({ ...others }) => {
     const showNewPasswordHandler = () => {
         setShowNewPassword(!showPassword);
     };
+
+    const [activeStep, setActiveStep] = React.useState(0);
+    const [completed, setCompleted] = React.useState({});
+
+    const totalSteps = () => steps.length;
+
+    const completedSteps = () => Object.keys(completed).length;
+
+    const isLastStep = () => activeStep === totalSteps() - 1;
+
+    const allStepsCompleted = () => completedSteps() === totalSteps();
+
+    const handleNext = () => {
+        const newActiveStep =
+            isLastStep() && !allStepsCompleted()
+                ? // It's the last step, but not all steps have been completed,
+                  // find the first step that has been completed
+                  steps.findIndex((step, i) => !(i in completed))
+                : activeStep + 1;
+        setActiveStep(newActiveStep);
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
+    const handleStep = (step) => () => {
+        setActiveStep(step);
+    };
+
+    const handleName = (event, value) => () => {
+        console.log(value);
+        setFName(value);
+    };
+
+    const handleComplete = () => {
+        console.log('dgdfg');
+        const newCompleted = completed;
+        newCompleted[activeStep] = true;
+        setCompleted(newCompleted);
+        handleNext();
+    };
+
+    const handleReset = () => {
+        setActiveStep(0);
+        setCompleted({});
+    };
+
     const googleHandler = async () => {
         console.error('Register');
     };
@@ -139,7 +190,7 @@ const FirebaseRegister = ({ ...others }) => {
                     console.log(response);
                     setDataLoading(false);
                     if (response.data.success) {
-                        navigate('/pages/login/login3', { replace: true });
+                        navigate('/', { replace: true });
                     } else {
                         Store.addNotification({
                             title: 'Error Occured!',
@@ -209,6 +260,313 @@ const FirebaseRegister = ({ ...others }) => {
         // setCity('');
     };
 
+    const GetStep = ({ step }) => {
+        console.log(step);
+        switch (step) {
+            case 0:
+                return (
+                    <form noValidate {...others} onSubmit={addUserHandler}>
+                        <Grid container spacing={matchDownSM ? 0 : 2}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="First Name"
+                                    margin="normal"
+                                    value={fName}
+                                    type="text"
+                                    sx={{ ...theme.typography.customInput }}
+                                    onChange={(event, value) => {
+                                        console.log(event.target.value);
+                                        setFName(event.target.value);
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Last Name"
+                                    margin="normal"
+                                    value={lName}
+                                    type="text"
+                                    sx={{ ...theme.typography.customInput }}
+                                    onChange={(event) => {
+                                        setLName(event.target.value);
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+                        <FormControl fullWidth>
+                            <TextField
+                                label="Email"
+                                type="email"
+                                margin="normal"
+                                value={email}
+                                onChange={(event) => {
+                                    setEmail(event.target.value);
+                                }}
+                                sx={{ ...theme.typography.customInput }}
+                                // error
+                                // helperText={error ? 'Unvalid email' : null}
+                            />
+                        </FormControl>
+                        <FormControl fullWidth sx={{ ...theme.typography.customInput, mb: 1 }}>
+                            <InputLabel>Password</InputLabel>
+                            <OutlinedInput
+                                type={showNewPassword ? 'text' : 'password'}
+                                value={newPassword}
+                                onChange={(event) => {
+                                    setNewPassword(event.target.value);
+                                }}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={showNewPasswordHandler}
+                                            edge="end"
+                                            size="large"
+                                        >
+                                            {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                            />
+                        </FormControl>
+                        <FormControl fullWidth sx={{ ...theme.typography.customInput, mb: 1 }}>
+                            <InputLabel>Confirm Password</InputLabel>
+                            <OutlinedInput
+                                type={showNewPassword ? 'text' : 'password'}
+                                value={newPassword}
+                                onChange={(event) => {
+                                    setPassword(event.target.value);
+                                }}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={showPasswordHandler}
+                                            edge="end"
+                                            size="large"
+                                        >
+                                            {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                            />
+                        </FormControl>
+
+                        {strength !== 0 && (
+                            <FormControl fullWidth>
+                                <Box sx={{ mb: 2 }}>
+                                    <Grid container spacing={2} alignItems="center">
+                                        <Grid item>
+                                            <Box
+                                                style={{ backgroundColor: level?.color }}
+                                                sx={{ width: 85, height: 8, borderRadius: '7px' }}
+                                            />
+                                        </Grid>
+                                        <Grid item>
+                                            <Typography variant="subtitle1" fontSize="0.75rem">
+                                                {level?.label}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </FormControl>
+                        )}
+                        <FormControl>
+                            <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
+                            <RadioGroup
+                                row
+                                aria-labelledby="demo-radio-buttons-group-label"
+                                value={gender}
+                                name="radio-buttons-group"
+                                onChange={(event) => {
+                                    setGender(event.target.value);
+                                }}
+                            >
+                                <FormControlLabel value="male" control={<Radio />} label="Male" />
+                                <FormControlLabel value="female" control={<Radio />} label="Female" />
+                                <FormControlLabel value="other" control={<Radio />} label="Other" />
+                            </RadioGroup>
+                        </FormControl>
+                    </form>
+                );
+            case 1:
+                return (
+                    <form noValidate {...others} onSubmit={addUserHandler}>
+                        <FormControl fullWidth>
+                            <TextField
+                                label="Contact Number"
+                                type="text"
+                                value={contactNumber}
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                margin="normal"
+                                onChange={(newValue) => {
+                                    setContactNumber(newValue.target.value);
+                                }}
+                                sx={{ ...theme.typography.customInput }}
+                            />
+                        </FormControl>
+
+                        <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                            <LocalizationProvider fullWidth sx={{ ...theme.typography.customInput }} dateAdapter={AdapterDateFns}>
+                                <DatePicker
+                                    label="Date of Birth"
+                                    value={birthday}
+                                    onChange={(newValue) => {
+                                        setBirthday(newValue.toLocaleDateString('en-CA'));
+                                    }}
+                                    renderInput={(params) => <TextField sx={{ ...theme.typography.customInput }} {...params} />}
+                                />
+                            </LocalizationProvider>
+
+                            <FormControl fullWidth>
+                                <FormLabel>Address</FormLabel>
+                                <TextField
+                                    label="Street"
+                                    type="text"
+                                    margin="normal"
+                                    value={street}
+                                    onChange={(event) => {
+                                        setStreet(event.target.value);
+                                    }}
+                                    sx={{ ...theme.typography.customInput }}
+                                />
+                                <TextField
+                                    label="Lane"
+                                    type="text"
+                                    margin="normal"
+                                    value={lane}
+                                    onChange={(event) => {
+                                        setLane(event.target.value);
+                                    }}
+                                    sx={{ ...theme.typography.customInput }}
+                                />
+                                <TextField
+                                    label="City"
+                                    type="text"
+                                    margin="normal"
+                                    value={city}
+                                    onChange={(event) => {
+                                        setCity(event.target.value);
+                                    }}
+                                    sx={{ ...theme.typography.customInput }}
+                                />
+                                <TextField
+                                    label="Province"
+                                    type="text"
+                                    margin="normal"
+                                    value={province}
+                                    onChange={(event) => {
+                                        setProvince(event.target.value);
+                                    }}
+                                    sx={{ ...theme.typography.customInput }}
+                                />
+                            </FormControl>
+                        </FormControl>
+                        {/* <Grid container alignItems="center" justifyContent="space-between">
+                            <Grid item>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={checked}
+                                            onChange={(event) => setChecked(event.target.checked)}
+                                            name="checked"
+                                            color="primary"
+                                        />
+                                    }
+                                    label={
+                                        <Typography variant="subtitle1">
+                                            Agree with &nbsp;
+                                            <Typography variant="subtitle1" component={Link} to="#">
+                                                Terms & Condition.
+                                            </Typography>
+                                        </Typography>
+                                    }
+                                />
+                            </Grid>
+                        </Grid>
+
+                        <Box sx={{ mt: 3 }}>
+                            <FormHelperText error />
+                        </Box>
+
+                        <Box sx={{ mt: 2 }}>
+                            <AnimateButton>
+                                <Button disableElevation fullWidth size="large" type="submit" variant="contained" color="secondary">
+                                    Sign up
+                                </Button>
+                            </AnimateButton>
+                        </Box> */}
+                    </form>
+                );
+            case 2:
+                return (
+                    <div
+                        style={{
+                            textAlign: 'center',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <Typography variant="subtitle1" sx={{ pt: 2 }}>
+                            Signup is almost done. check the entered details and click below SignUp button to signup.
+                        </Typography>
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                height: '100%',
+                                width: '100%'
+                            }}
+                        >
+                            <Lottie options={defaultOptions} height={200} width={200} />
+                        </div>
+
+                        <form noValidate {...others} onSubmit={addUserHandler}>
+                            <Grid container alignItems="center" justifyContent="space-between">
+                                <Grid item>
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={checked}
+                                                onChange={(event) => setChecked(event.target.checked)}
+                                                name="checked"
+                                                color="primary"
+                                            />
+                                        }
+                                        label={
+                                            <Typography variant="subtitle1">
+                                                Agree with &nbsp;
+                                                <Typography variant="subtitle1" component={Link} to="#">
+                                                    Terms & Condition.
+                                                </Typography>
+                                            </Typography>
+                                        }
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            <Box sx={{ mt: 3 }}>
+                                <FormHelperText error />
+                            </Box>
+
+                            <Box sx={{ mt: 2 }}>
+                                <AnimateButton>
+                                    <Button disableElevation fullWidth size="large" type="submit" variant="contained" color="secondary">
+                                        Sign up
+                                    </Button>
+                                </AnimateButton>
+                            </Box>
+                        </form>
+                    </div>
+                );
+            default:
+                return <Typography variant="subtitle1">Terms & Condition.</Typography>;
+        }
+    };
+
     return (
         <div>
             {/* <Grid container direction="column" justifyContent="center" spacing={2}>
@@ -262,8 +620,53 @@ const FirebaseRegister = ({ ...others }) => {
                 </Grid>
             </Grid> */}
 
-            <form noValidate {...others} onSubmit={addUserHandler}>
-                {/* <Grid container spacing={matchDownSM ? 0 : 2}>
+            <Stepper nonLinear activeStep={activeStep}>
+                {steps.map((label, index) => (
+                    <Step key={label} completed={completed[index]}>
+                        <StepButton color="inherit" onClick={handleStep(index)}>
+                            {label}
+                        </StepButton>
+                    </Step>
+                ))}
+            </Stepper>
+            <div>
+                {allStepsCompleted() ? (
+                    <>
+                        <Typography sx={{ mt: 2, mb: 1 }}>All steps completed - you&apos;re finished</Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                            <Box sx={{ flex: '1 1 auto' }} />
+                            <Button onClick={handleReset}>Reset</Button>
+                        </Box>
+                    </>
+                ) : (
+                    <>
+                        {/* <GetStep step={activeStep} /> */}
+                        {GetStep({ step: activeStep })}
+                        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                            <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
+                                Back
+                            </Button>
+                            <Box sx={{ flex: '1 1 auto' }} />
+                            <Button onClick={handleNext} sx={{ mr: 1 }}>
+                                Next
+                            </Button>
+                            {activeStep !== steps.length &&
+                                (completed[activeStep] ? (
+                                    <Typography variant="caption" sx={{ display: 'inline-block' }}>
+                                        Step {activeStep + 1} already completed
+                                    </Typography>
+                                ) : (
+                                    <Button onClick={handleComplete}>
+                                        {completedSteps() === totalSteps() - 1 ? 'Finish' : 'Complete Step'}
+                                    </Button>
+                                ))}
+                        </Box>
+                    </>
+                )}
+            </div>
+
+            {/* <form noValidate {...others} onSubmit={addUserHandler}>
+                <Grid container spacing={matchDownSM ? 0 : 2}>
                     <Grid item xs={12} sm={6}>
                         <TextField
                             fullWidth
@@ -360,7 +763,7 @@ const FirebaseRegister = ({ ...others }) => {
                             </Grid>
                         </Box>
                     </FormControl>
-                )} */}
+                )}
                 <FormControl>
                     <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
                     <RadioGroup
@@ -474,14 +877,7 @@ const FirebaseRegister = ({ ...others }) => {
                 <Box sx={{ mt: 3 }}>
                     <FormHelperText error />
                 </Box>
-                {/* 
-                <Box sx={{ mt: 2 }}>
-                    <AnimateButton>
-                        <Button disableElevation fullWidth size="large" type="submit" variant="contained" color="secondary">
-                            Next
-                        </Button>
-                    </AnimateButton>
-                </Box> */}
+                
 
                 <Box sx={{ mt: 2 }}>
                     <AnimateButton>
@@ -490,7 +886,7 @@ const FirebaseRegister = ({ ...others }) => {
                         </Button>
                     </AnimateButton>
                 </Box>
-            </form>
+            </form> */}
         </div>
     );
 };
