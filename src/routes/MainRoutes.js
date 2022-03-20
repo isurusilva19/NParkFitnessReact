@@ -23,19 +23,21 @@ const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 const UtilsMaterialIcons = Loadable(lazy(() => import('views/utilities/MaterialIcons')));
 const UtilsTablerIcons = Loadable(lazy(() => import('views/utilities/TablerIcons')));
 
+const AuthLogin3 = Loadable(lazy(() => import('views/pages/authentication/authentication3/Login3')));
+
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
 // ===========================|| MAIN ROUTING ||=========================== //
 
 const MainRoutes = {
-    path: '/',
+    path: '/pages',
     element: <MainLayout />,
     children: [
-        {
-            path: '/',
-            element: <DashboardDefault />
-        },
+        // {
+        //     path: '/',
+        //     element: <AuthLogin3 />
+        // },
         {
             path: '/dashboard/default',
             element: <DashboardDefault />
@@ -57,19 +59,19 @@ const MainRoutes = {
             element: <DashboardAdmin />
         },
         {
-            path: '/pages/customerPayment',
+            path: '/customerPayment',
             element: <CustomerPayment />
         },
         {
-            path: '/pages/subscription',
+            path: '/subscription',
             element: <Subscription />
         },
         {
-            path: '/pages/notification',
+            path: '/notification',
             element: <Notification />
         },
         {
-            path: '/pages/calorieCal',
+            path: '/calorieCal',
             element: <CalorieCal />
         },
         {

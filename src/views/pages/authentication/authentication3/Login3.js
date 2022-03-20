@@ -12,7 +12,7 @@ import AuthLogin from '../auth-forms/AuthLogin';
 import Logo from 'ui-component/Logo';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 import HttpCommon from 'utils/http-common';
-
+import logo from 'assets/images/NFIcon.png';
 // assets
 
 // ================================|| AUTH3 - LOGIN ||================================ //
@@ -29,7 +29,7 @@ const Login = () => {
                         <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
                             <AuthCardWrapper>
                                 <Grid container spacing={2} alignItems="center" justifyContent="center">
-                                    <Grid item sx={{ mb: 3 }} />
+                                    {/* <Grid item sx={{ mb: 0 }} /> */}
                                     <Grid item xs={12}>
                                         <Grid
                                             container
@@ -39,6 +39,7 @@ const Login = () => {
                                         >
                                             <Grid item>
                                                 <Stack alignItems="center" justifyContent="center" spacing={1}>
+                                                    <img src={logo} alt="icon" height={150} />
                                                     <Typography
                                                         color={theme.palette.secondary.main}
                                                         gutterBottom

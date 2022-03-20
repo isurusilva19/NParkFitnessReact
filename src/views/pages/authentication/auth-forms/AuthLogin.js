@@ -99,7 +99,7 @@ const FirebaseLogin = ({ ...others }) => {
                     if (response.data.success) {
                         localStorage.setItem('type', response.data.data.type);
                         localStorage.setItem('userID', response.data.data.id);
-                        navigate('/dashboard/admin');
+                        navigate('/pages/dashboard/admin');
                     } else {
                         Store.addNotification({
                             title: 'Error Occured!',
@@ -179,7 +179,7 @@ const FirebaseLogin = ({ ...others }) => {
                     if (response.data.success) {
                         localStorage.setItem('type', response.data.data.type);
                         localStorage.setItem('userID', response.data.data.id);
-                        navigate('/dashboard/admin');
+                        navigate('/pages/dashboard/admin');
                     } else {
                         localStorage.clear();
                         window.location.reload();

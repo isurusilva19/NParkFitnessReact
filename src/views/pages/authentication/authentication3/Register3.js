@@ -12,6 +12,7 @@ import AuthRegister from '../auth-forms/AuthRegister';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 import HorizontalLabelPositionBelowStepper from './Stepper';
 import HttpCommon from 'utils/http-common';
+import logo from 'assets/images/NFIcon.png';
 
 // assets
 
@@ -29,7 +30,7 @@ const Register = () => {
                         <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
                             <AuthCardWrapper>
                                 <Grid container spacing={2} alignItems="center" justifyContent="center">
-                                    <Grid item sx={{ mb: 3 }} />
+                                    {/* <Grid item sx={{ mb: 3 }} /> */}
                                     <Grid item xs={12}>
                                         <Grid
                                             container
@@ -39,6 +40,7 @@ const Register = () => {
                                         >
                                             <Grid item>
                                                 <Stack alignItems="center" justifyContent="center" spacing={1}>
+                                                    <img src={logo} alt="icon" height={150} />
                                                     <Typography
                                                         color={theme.palette.secondary.main}
                                                         gutterBottom
@@ -48,7 +50,7 @@ const Register = () => {
                                                         <br />
                                                         <i>NPark Fitness</i>
                                                     </Typography>
-                                                    <HorizontalLabelPositionBelowStepper />
+                                                    {/* <HorizontalLabelPositionBelowStepper /> */}
                                                     <Typography
                                                         variant="caption"
                                                         fontSize="16px"
@@ -68,12 +70,7 @@ const Register = () => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Grid item container direction="column" alignItems="center" xs={12}>
-                                            <Typography
-                                                component={Link}
-                                                to="/pages/login/login3"
-                                                variant="subtitle1"
-                                                sx={{ textDecoration: 'none' }}
-                                            >
+                                            <Typography component={Link} to="/" variant="subtitle1" sx={{ textDecoration: 'none' }}>
                                                 Already have an account?
                                             </Typography>
                                         </Grid>
