@@ -79,12 +79,26 @@ const useStyles = makeStyles((theme) => ({
         //     right: '-350px'
         // }
     },
+    page: {
+        width: '21cm',
+        minHeight: '29.7cm',
+        padding: '2cm',
+        margin: '1cm auto',
+        border: '1px #D3D3D3 solid',
+        borderRadius: '5px',
+        background: 'white',
+        boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)'
+    },
     mainCard: {
         // backgroundColor: theme.palette.secondary.dark,
         color: '#fff',
         overflow: 'hidden',
         position: 'relative',
-        width: '800px',
+        // width: '800px',
+        width: '21cm',
+        // height: '29.7cm',
+        // padding: '2cm',
+        margin: '0.5cm auto',
         // border: '5px solid #916BD8',
         boxShadow: '0 2px 14px 0 rgb(32 40 45 / 8%)',
         // borderRadius: '0px!important'
@@ -140,26 +154,66 @@ const Report = ({ size, data }) => {
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
     return (
         <>
-            <Typography
-                color={theme.palette.secondary.main}
-                style={{
-                    textShadow: '0px 0px 5px #D0B7FF',
-                    textAlign: 'center',
-                    marginTop: '20px',
-                    marginBottom: '0px'
+            <SubCard
+                className={classes.mainCard}
+                sx={{
+                    color: 'white',
+                    maxWidth: 900,
+                    minWidth: 100,
+                    justifyContent: 'center',
+                    alignItems: 'center'
                 }}
-                gutterBottom
-                variant="h3"
             >
-                Member Report
-            </Typography>
-            <Typography variant="h5" fontSize="14px" textAlign="center" marginBottom="40px">
-                NPartFitness
-            </Typography>
-            <MemberDetails data={memberData} />
-            <ScheduleDetails data={memberData} />
-            <WeightDetails data={memberData} />
-            <AttendDetails data={memberData} />
+                <Typography
+                    color={theme.palette.secondary.main}
+                    style={{
+                        textShadow: '0px 0px 5px #D0B7FF',
+                        textAlign: 'center',
+                        marginTop: '20px',
+                        marginBottom: '0px'
+                    }}
+                    gutterBottom
+                    variant="h3"
+                >
+                    Member Report
+                </Typography>
+                <Typography variant="h5" fontSize="14px" textAlign="center" marginBottom="40px">
+                    NPartFitness
+                </Typography>
+                <MemberDetails data={memberData} />
+                <ScheduleDetails data={memberData} />
+                <WeightDetails data={memberData} />
+                <AttendDetails data={memberData} />
+            </SubCard>
+            {/* <SubCard
+                className={classes.mainCard}
+                sx={{
+                    color: 'white',
+                    maxWidth: 900,
+                    minWidth: 100,
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}
+            >
+                <Typography
+                    color={theme.palette.secondary.main}
+                    style={{
+                        textShadow: '0px 0px 5px #D0B7FF',
+                        textAlign: 'center',
+                        marginTop: '20px',
+                        marginBottom: '0px'
+                    }}
+                    gutterBottom
+                    variant="h3"
+                >
+                    Member Report
+                </Typography>
+                <Typography variant="h5" fontSize="14px" textAlign="center" marginBottom="40px">
+                    NPartFitness
+                </Typography>
+                <WeightDetails data={memberData} />
+                <AttendDetails data={memberData} />
+            </SubCard> */}
         </>
     );
 };
@@ -239,7 +293,7 @@ const MemberReport = () => {
                         <Grid container xs={12} sm={12} md={8} lg={8} style={{ maxWidth: 900, minWidth: 100 }}>
                             <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: 'calc(100vh - 68px)' }}>
                                 <Grid item sx={{ m: { xs: 2, sm: 6 }, mb: 0 }}>
-                                    <SubCard
+                                    {/* <SubCard
                                         className={classes.mainCard}
                                         sx={{
                                             color: 'white',
@@ -248,9 +302,9 @@ const MemberReport = () => {
                                             justifyContent: 'center',
                                             alignItems: 'center'
                                         }}
-                                    >
-                                        <Report size={12} data={memberData} />
-                                    </SubCard>
+                                    > */}
+                                    <Report size={12} data={memberData} />
+                                    {/* </SubCard> */}
                                     <div style={{ textAlign: 'right' }}>
                                         <ReactToPrint
                                             documentTitle="Member Report"
@@ -296,7 +350,7 @@ export class ComponentToPrint extends React.PureComponent {
             <>
                 <Grid container justify="center">
                     <Grid item xs={12} sm={12} md={12}>
-                        <SubCard
+                        {/* <SubCard
                             className={classes.mainCard}
                             sx={{
                                 color: 'white',
@@ -305,11 +359,11 @@ export class ComponentToPrint extends React.PureComponent {
                                 justifyContent: 'center',
                                 alignItems: 'center'
                             }}
-                        >
-                            <div>
-                                <Report data={receiptData} />
-                            </div>
-                        </SubCard>
+                        > */}
+                        <div>
+                            <Report data={receiptData} />
+                        </div>
+                        {/* </SubCard> */}
                     </Grid>
                 </Grid>
             </>
