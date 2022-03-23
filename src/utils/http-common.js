@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { store } from '../store/index';
-
+import { Navigate } from 'react-router-dom';
+import React, { Component } from 'react';
 // const { token } = store.getState();
 
 // // const token = customization.token;
@@ -41,12 +42,18 @@ instance.interceptors.response.use(
         // Any status code that lie within the range of 2xx cause this function to trigger
         // Do something with response data
         console.log(response);
+        console.log(response.status);
         return response;
     },
     (error) => {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
         console.log(error);
+        console.log(error.response.status);
+        if (error.response.status === 402) {
+            console.log('error');
+            window.location = '/';
+        }
         return Promise.reject(error);
     }
 );

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 // material-ui
 import { useTheme } from '@material-ui/core/styles';
@@ -22,7 +22,11 @@ const useStyles = makeStyles((theme) => ({
         // backgroundColor: theme.palette.secondary.dark,
         color: '#fff',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        height: '1000px',
+        // border: '5px solid #916BD8',
+        boxShadow: '0 2px 14px 0 rgb(32 40 45 / 8%)',
+        // borderRadius: '0px!important'
         // '&:after': {
         //     content: '""',
         //     zIndex: 1,
@@ -33,17 +37,17 @@ const useStyles = makeStyles((theme) => ({
         //     // borderRadius: '50%',
         //     top: '-300px',
         //     right: '-250px'
-        // }
-        // '&:before': {
-        //     content: '""',
-        //     position: 'absolute',
-        //     width: '610px',
-        //     height: '610px',
-        //     background: `linear-gradient(140.9deg, ${theme.palette.secondary[200]} -14.02%, rgba(144, 202, 249, 0) 77.58%)`,
-        //     borderRadius: '250%',
-        //     top: '-160px',
-        //     right: '-100px'
-        // }
+        // },
+        '&:before': {
+            content: '""',
+            position: 'absolute',
+            width: '1500px',
+            height: '610px',
+            background: `linear-gradient(275.9deg, ${theme.palette.secondary[800]} -50.02%, rgba(145, 107, 216, 0) 180.58%)`,
+            borderRadius: '250%',
+            top: '-500px',
+            right: '-350px'
+        }
     },
     button: {
         color: theme.palette.white,
@@ -58,9 +62,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const Receipt = ({ size }) => {
+const Receipt = ({ size, data }) => {
     const theme = useTheme();
     const classes = useStyles();
+    console.log(data);
 
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
     return (
@@ -70,7 +75,23 @@ const Receipt = ({ size }) => {
                     <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
                         <Grid item>
                             <Stack alignItems="center" justifyContent="center">
-                                <Typography color={theme.palette.secondary.main} gutterBottom variant={matchDownSM ? 'h3' : 'h3'}>
+                                {/* <div
+                                    style={{
+                                        color: 'black',
+                                        backgroundColor: 'black',
+                                        height: '40px',
+                                        width: '100px',
+                                        borderRadius: '10px',
+                                        WebkitClipPath: 'polygon(0% 0%, 45% 0, 75% 100%, 0% 100%)',
+                                        clipPath: 'polygon(0% 0%, 45% 0, 120% 100%, 0% 100%)'
+                                    }}
+                                /> */}
+                                <Typography
+                                    color={theme.palette.secondary.main}
+                                    style={{ textShadow: '0px 0px 5px #D0B7FF' }}
+                                    gutterBottom
+                                    variant={matchDownSM ? 'h3' : 'h3'}
+                                >
                                     Receipt from The NParkFitness Platform
                                 </Typography>
                                 <Typography variant="caption" fontSize="14px" textAlign={matchDownSM ? 'center' : ''}>
@@ -101,19 +122,19 @@ const Receipt = ({ size }) => {
                             Billing To
                         </Typography>
                         <Typography variant="body1" color="black" fontSize="14px">
-                            Induwara Nagodavithana
+                            {data.subscription.user.firstName} {data.subscription.user.lastName} ,
                         </Typography>
                         <Typography variant="body1" color="black" fontSize="14px">
-                            Niladeniya
+                            {data.subscription.user.street} ,
                         </Typography>
                         <Typography variant="body1" color="black" fontSize="14px">
-                            Hapugala
+                            {data.subscription.user.lane} ,
                         </Typography>
                         <Typography variant="body1" color="black" fontSize="14px">
-                            Wackwella
+                            {data.subscription.user.city} ,
                         </Typography>
                         <Typography variant="body1" color="black" fontSize="14px">
-                            Galle
+                            {data.subscription.user.province} .
                         </Typography>
                     </Stack>
                 </Grid>
@@ -123,7 +144,7 @@ const Receipt = ({ size }) => {
                             Amount Paid
                         </Typography>
                         <Typography variant="body1" color="black" fontSize="14px" textAlign={matchDownSM ? 'center' : ''}>
-                            Rs 1500.00
+                            Rs {data.amount}
                         </Typography>
                     </Stack>
                 </Grid>
@@ -133,7 +154,7 @@ const Receipt = ({ size }) => {
                             Date Paid
                         </Typography>
                         <Typography variant="body1" color="black" fontSize="14px" textAlign={matchDownSM ? 'center' : ''}>
-                            June 25, 2021
+                            {data.date}
                         </Typography>
                     </Stack>
                 </Grid>
@@ -159,7 +180,8 @@ const Receipt = ({ size }) => {
                                     alignItems: 'center',
                                     py: 3,
                                     pl: 3,
-                                    bgcolor: theme.palette.secondary[200],
+                                    borderLeft: '5px solid #916BD8',
+                                    bgcolor: theme.palette.grey[200],
                                     color: theme.palette.grey[800]
                                 }}
                             >
@@ -178,7 +200,7 @@ const Receipt = ({ size }) => {
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
                                         <Typography style={{ fontSize: '15px' }} variant="h6">
-                                            Gold Plan
+                                            {data.subscription.subscriptionType.type}
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
@@ -188,7 +210,7 @@ const Receipt = ({ size }) => {
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
                                         <Typography style={{ fontSize: '15px' }} variant="h6">
-                                            1
+                                            {data.subscription.subscriptionType.gymCount}
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
@@ -198,7 +220,7 @@ const Receipt = ({ size }) => {
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
                                         <Typography style={{ fontSize: '15px' }} variant="h6">
-                                            3
+                                            {data.subscription.subscriptionType.branchCount}
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
@@ -208,7 +230,7 @@ const Receipt = ({ size }) => {
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
                                         <Typography style={{ fontSize: '15px' }} variant="h6">
-                                            Available
+                                            {data.subscription.subscriptionType.isCalAvailable ? 'Available' : 'Not Available'}
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
@@ -218,7 +240,7 @@ const Receipt = ({ size }) => {
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
                                         <Typography style={{ fontSize: '15px' }} variant="h6">
-                                            Available
+                                            {data.subscription.subscriptionType.isDietAvailable ? 'Available' : 'Not Available'}
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
@@ -228,7 +250,7 @@ const Receipt = ({ size }) => {
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
                                         <Typography style={{ fontSize: '15px' }} variant="h6">
-                                            This has only branch
+                                            {data.subscription.subscriptionType.description}
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
@@ -238,7 +260,7 @@ const Receipt = ({ size }) => {
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
                                         <Typography style={{ fontSize: '15px' }} variant="h6">
-                                            Rs 1500.00
+                                            Rs {data.subscription.subscriptionType.amount}
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -253,7 +275,7 @@ const Receipt = ({ size }) => {
                                     </Grid>
                                     <Grid item xs={size} sm={6} md={6} pb={2}>
                                         <Typography style={{ fontSize: '15px' }} variant="h6">
-                                            Rs 1500.00
+                                            Rs {data.amount}
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -262,8 +284,10 @@ const Receipt = ({ size }) => {
                     </div>
                 </Grid>
                 <Grid item xs={10}>
+                    <div style={{ height: '100px' }} />
                     <Divider />
                 </Grid>
+
                 <Grid item xs={12}>
                     <Grid container direction="row" alignItems="center" justifyContent="center" xs={12}>
                         <Typography variant="subtitle1" sx={{ textDecoration: 'none' }}>
@@ -287,11 +311,12 @@ const Receipt = ({ size }) => {
 
 //= ===============================|| Payment Success Page ||================================//
 
-const PaymentSuccess = () => {
+const PaymentSuccess = ({ receiptData }) => {
     const theme = useTheme();
     const classes = useStyles();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
     const componentRef = useRef();
+    const { state } = useLocation();
 
     return (
         <AuthWrapper1>
@@ -299,7 +324,7 @@ const PaymentSuccess = () => {
                 <Grid container xs={12} sm={12} md={8} lg={6} style={{ maxWidth: 900, minWidth: 100 }}>
                     <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: 'calc(100vh - 68px)' }}>
                         <Grid item sx={{ m: { xs: 2, sm: 6 }, mb: 0 }}>
-                            <Receipt size={12} />
+                            <Receipt size={12} data={state.receiptData} />
                             <div style={{ textAlign: 'right' }}>
                                 <ReactToPrint
                                     documentTitle="Class Manager Invoice"
@@ -315,7 +340,7 @@ const PaymentSuccess = () => {
                                     content={() => componentRef.current}
                                 />
                                 <div style={{ display: 'none' }}>
-                                    <ComponentToPrint ref={componentRef} />
+                                    <ComponentToPrint ref={componentRef} receiptData={state.receiptData} />
                                 </div>
                             </div>
                         </Grid>
@@ -332,7 +357,8 @@ const PaymentSuccess = () => {
 export class ComponentToPrint extends React.PureComponent {
     render() {
         // const classes = this.props;
-        // console.log(this.props.name); // result: 'some_value'
+        const { receiptData } = this.props;
+        console.log(receiptData); // result: 'some_value'
         // console.log(this.props.centerPayData); // result: 'some_value'
         // console.log(this.props); // result: 'some_value'
         return (
@@ -341,7 +367,7 @@ export class ComponentToPrint extends React.PureComponent {
                     <Grid item xs={12} sm={12} md={12}>
                         <Card>
                             <div style={{ padding: '20px' }}>
-                                <Receipt size={6} />
+                                <Receipt size={6} data={receiptData} />
                             </div>
                         </Card>
                     </Grid>

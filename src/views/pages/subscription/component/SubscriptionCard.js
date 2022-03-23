@@ -122,7 +122,7 @@ const SubscriptionCard = (subscriptionData) => {
                     <form method="post" action="https://sandbox.payhere.lk/pay/checkout">
                         <div style={{ display: 'none' }}>
                             <input type="hidden" name="merchant_id" value="1217402" />
-                            <input type="hidden" name="return_url" value="http://localhost:3000/pages/paymentSuccess" />
+                            <input type="hidden" name="return_url" value="http://localhost:3000/pages/subscription" />
                             <input type="hidden" name="cancel_url" value="http://localhost:3000/pages/subscription" />
                             <input type="hidden" name="notify_url" value="https://npark-fitness-test.herokuapp.com/payhere/notify" />
                             <br />
