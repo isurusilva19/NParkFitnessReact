@@ -88,6 +88,28 @@ const pages = {
             breadcrumbs: false
         },
         {
+            id: 'report',
+            title: 'Reports',
+            type: 'collapse',
+            icon: IconReportAnalytics,
+            children: [
+                {
+                    id: 'member-report',
+                    title: 'Member Report',
+                    type: 'item',
+                    url: '/pages/memberReport',
+                    breadcrumbs: false
+                },
+                {
+                    id: 'material-icons',
+                    title: 'Material Icons',
+                    type: 'item',
+                    url: '/icons/material-icons',
+                    breadcrumbs: false
+                }
+            ]
+        },
+        {
             id: 'customerPayment3',
             title: 'Branch Managment',
             type: 'item',

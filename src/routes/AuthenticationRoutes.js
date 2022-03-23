@@ -8,6 +8,7 @@ import MinimalLayout from 'layout/MinimalLayout';
 const AuthLogin3 = Loadable(lazy(() => import('views/pages/authentication/authentication3/Login3')));
 const AuthRegister3 = Loadable(lazy(() => import('views/pages/authentication/authentication3/Register3')));
 const PaymentSuccess = Loadable(lazy(() => import('views/pages/subscription/PaymentSuccessPage')));
+const MemberReport = Loadable(lazy(() => import('views/pages/reports/member-report/memberReport')));
 
 // ===========================|| AUTHENTICATION ROUTING ||=========================== //
 
@@ -30,6 +31,10 @@ const AuthenticationRoutes = {
         {
             path: '/pages/paymentSuccess',
             element: <PaymentSuccess />
+        },
+        {
+            path: '/pages/report/memberReport',
+            element: <MemberReport />
         }
     ]
 };

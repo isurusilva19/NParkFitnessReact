@@ -327,7 +327,7 @@ const PaymentSuccess = ({ receiptData }) => {
                             <Receipt size={12} data={state.receiptData} />
                             <div style={{ textAlign: 'right' }}>
                                 <ReactToPrint
-                                    documentTitle="Class Manager Invoice"
+                                    documentTitle="NParkFitness Invoice"
                                     trigger={() => (
                                         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '50px' }}>
                                             <AnimateButton>
