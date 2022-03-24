@@ -97,7 +97,9 @@ const pages = {
                     id: 'member-report',
                     title: 'Member Report',
                     type: 'item',
-                    url: '/pages/memberReport',
+                    url: '/pages/report/memberReport',
+                    external: true,
+                    target: true,
                     breadcrumbs: false
                 },
                 {

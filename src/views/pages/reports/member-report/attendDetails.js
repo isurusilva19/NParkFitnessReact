@@ -152,7 +152,7 @@ export const appointments = [
     }
 ];
 
-const currentDate = '2018-07-17';
+const currentDate = new Date().toISOString().slice(0, 10);
 const AttendDetails = ({ size, data }) => {
     theme = useTheme();
     const classes = useStyles();
@@ -160,6 +160,26 @@ const AttendDetails = ({ size, data }) => {
     const memberData = data;
 
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
+    const [attendanceArr, setAttendanceArr] = React.useState([]);
+
+    useEffect(async () => {
+        if (data !== undefined) {
+            const attendance = [];
+            data.forEach((element) => {
+                const date = new Date(element.date);
+                const nextDay = new Date(element.date);
+                nextDay.setDate(nextDay.getDate() + 1);
+
+                attendance.push({
+                    title: 'Attended',
+                    startDate: date.toISOString().slice(0, 10),
+                    endDate: nextDay.toISOString().slice(0, 10)
+                });
+            });
+            console.log(attendance);
+            setAttendanceArr(attendance);
+        }
+    }, []);
 
     return (
         <>
@@ -170,7 +190,7 @@ const AttendDetails = ({ size, data }) => {
             >
                 <Grid container alignItems="center" justifyContent="center" spacing={gridSpacing}>
                     <Grid align="center" item xs={12}>
-                        <Scheduler data={appointments}>
+                        <Scheduler data={attendanceArr}>
                             <ViewState currentDate={currentDate} />
                             <MonthView />
                             <Appointments />

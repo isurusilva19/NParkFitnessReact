@@ -35,6 +35,7 @@ import MemberDetails from './memberDetails';
 import WeightDetails from './weightDetails';
 import AttendDetails from './attendDetails';
 import ScheduleDetails from './scheduleDetails';
+import DietDetails from './dietDetails';
 
 // assets
 
@@ -145,11 +146,10 @@ const CustomTypography = withStyles({
     }
 })(MuiTypography);
 
-const Report = ({ size, data }) => {
+const Report = ({ size, memberData, weightData, attendanceData, scheduleData, dietData }) => {
     theme = useTheme();
     const classes = useStyles();
-    console.log(data);
-    const memberData = data;
+    console.log(memberData);
 
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
     return (
@@ -181,39 +181,11 @@ const Report = ({ size, data }) => {
                     NPartFitness
                 </Typography>
                 <MemberDetails data={memberData} />
-                <ScheduleDetails data={memberData} />
-                <WeightDetails data={memberData} />
-                <AttendDetails data={memberData} />
+                <ScheduleDetails data={scheduleData} />
+                <WeightDetails data={weightData} />
+                <AttendDetails data={attendanceData} />
+                <DietDetails data={dietData} />
             </SubCard>
-            {/* <SubCard
-                className={classes.mainCard}
-                sx={{
-                    color: 'white',
-                    maxWidth: 900,
-                    minWidth: 100,
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}
-            >
-                <Typography
-                    color={theme.palette.secondary.main}
-                    style={{
-                        textShadow: '0px 0px 5px #D0B7FF',
-                        textAlign: 'center',
-                        marginTop: '20px',
-                        marginBottom: '0px'
-                    }}
-                    gutterBottom
-                    variant="h3"
-                >
-                    Member Report
-                </Typography>
-                <Typography variant="h5" fontSize="14px" textAlign="center" marginBottom="40px">
-                    NPartFitness
-                </Typography>
-                <WeightDetails data={memberData} />
-                <AttendDetails data={memberData} />
-            </SubCard> */}
         </>
     );
 };
@@ -226,16 +198,59 @@ const MemberReport = () => {
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
     const componentRef = useRef(null);
     const [memberData, setMemberData] = React.useState(null);
+    const [weightData, setWeightData] = React.useState(null);
+    const [attendanceData, setAttendanceData] = React.useState(null);
+    const [dietData, setDietData] = React.useState(null);
+    const [scheduleData, setScheduleData] = React.useState(null);
     const [isDataLoading, setDataLoading] = React.useState(true);
     const [display, setDisplay] = React.useState('none');
 
     const memberId = 1;
+    const userId = 1;
     function getMemberDetails() {
         // let arr = [];
         HttpCommon.get(`/api/payment/getAllPaymentByMemberId/${memberId}`).then((response) => {
             console.log(response.data.data);
             setMemberData(response.data.data);
-            setDataLoading(false);
+
+            HttpCommon.get(`/api/bodyDetails/getBodyDetailsByUserId/${userId}`).then((response) => {
+                if (response.data.data !== undefined && response.data.data.bodyDetails.length > 8) {
+                    response.data.data.bodyDetails = response.data.data.bodyDetails.slice(-8);
+                }
+                console.log(response.data.data);
+                setWeightData(response.data.data);
+
+                HttpCommon.post(`/api/attendance/getAttendanceByMemberIdAndMonth`, {
+                    date: new Date().toISOString().slice(0, 7),
+                    membershipId: memberId
+                }).then((response) => {
+                    console.log(response.data.data);
+                    setAttendanceData(response.data.data);
+
+                    HttpCommon.get(`/api/dietPlan/getDietPlanAndMealByUserId/${userId}`).then((response) => {
+                        console.log(response.data.data);
+                        setDietData(response.data.data);
+
+                        HttpCommon.post(`/api/attendItem/getAllAttendItemByMemberIdAndDate/`, {
+                            date: new Date().toISOString().slice(0, 10),
+                            membershipId: memberId
+                        }).then((response) => {
+                            console.log(response.data.data);
+
+                            if (response.data.data.attendItem.length === 0) {
+                                HttpCommon.get(`/api/scheduleItem/getScheduleItemByMemberId/${memberId}`).then((response) => {
+                                    console.log(response.data.data);
+                                    setScheduleData(response.data.data);
+                                    setDataLoading(false);
+                                });
+                            } else {
+                                setScheduleData(response.data.data);
+                                setDataLoading(false);
+                            }
+                        });
+                    });
+                });
+            });
 
             if (response.data.data.member === null) {
                 Store.addNotification({
@@ -303,7 +318,14 @@ const MemberReport = () => {
                                             alignItems: 'center'
                                         }}
                                     > */}
-                                    <Report size={12} data={memberData} />
+                                    <Report
+                                        size={12}
+                                        memberData={memberData}
+                                        weightData={weightData}
+                                        attendanceData={attendanceData}
+                                        scheduleData={scheduleData}
+                                        dietData={dietData}
+                                    />
                                     {/* </SubCard> */}
                                     <div style={{ textAlign: 'right' }}>
                                         <ReactToPrint
@@ -323,7 +345,15 @@ const MemberReport = () => {
                                             <Typography variant="h5" fontSize="14px" textAlign="center" marginBottom="40px">
                                                 Print Preview
                                             </Typography>
-                                            <ComponentToPrint ref={componentRef} receiptData={memberData} classes={classes} />
+                                            <ComponentToPrint
+                                                ref={componentRef}
+                                                memberData={memberData}
+                                                weightData={weightData}
+                                                attendanceData={attendanceData}
+                                                scheduleData={scheduleData}
+                                                dietData={dietData}
+                                                classes={classes}
+                                            />
                                         </div>
                                     </div>
                                 </Grid>
@@ -342,8 +372,7 @@ const MemberReport = () => {
 export class ComponentToPrint extends React.PureComponent {
     render() {
         // const classes = this.props;
-        const { receiptData, classes } = this.props;
-        console.log(receiptData); // result: 'some_value'
+        const { memberData, weightData, attendanceData, scheduleData, dietData, classes } = this.props;
         // console.log(this.props.centerPayData); // result: 'some_value'
         // console.log(this.props); // result: 'some_value'
         return (
@@ -361,7 +390,13 @@ export class ComponentToPrint extends React.PureComponent {
                             }}
                         > */}
                         <div>
-                            <Report data={receiptData} />
+                            <Report
+                                memberData={memberData}
+                                weightData={weightData}
+                                attendanceData={attendanceData}
+                                scheduleData={scheduleData}
+                                dietData={dietData}
+                            />
                         </div>
                         {/* </SubCard> */}
                     </Grid>

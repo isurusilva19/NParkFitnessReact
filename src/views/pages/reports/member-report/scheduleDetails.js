@@ -101,26 +101,51 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     }
 }));
 
-function createData(name, bodyPart, percentage) {
-    return { name, bodyPart, percentage };
+function createData(name, repetitions, sets, time, percentage) {
+    return { name, repetitions, sets, time, percentage };
 }
 
-const rows = [
-    createData('Tread Mill', 'Full Body', '60%'),
-    createData('Bench Press', 'Abs', '33%'),
-    createData('Squats', 'Legs', '70%'),
-    createData('Bicep Curl', 'Arm', '40%'),
-    createData('Front Press', 'Back', '20%')
-];
+// const rows = [
+//     createData('Tread Mill', 'Full Body', '60%'),
+//     createData('Bench Press', 'Abs', '33%'),
+//     createData('Squats', 'Legs', '70%'),
+//     createData('Bicep Curl', 'Arm', '40%'),
+//     createData('Front Press', 'Back', '20%')
+// ];
 
 const ScheduleDetails = ({ size, data }) => {
     theme = useTheme();
     const classes = useStyles();
     console.log(data);
     const memberData = data;
+    const [rows, setRows] = React.useState([]);
 
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
+    useEffect(async () => {
+        console.log(Array.isArray(data));
+        if (data !== null && Array.isArray(data)) {
+            const newRow = [];
+            data.forEach((element) => {
+                newRow.push(createData(element.service.name, element.noOfRepetition, element.noOfSet, element.timeBySeconds, '0%'));
+            });
+            setRows(newRow);
+        } else if (data !== null && !Array.isArray(data)) {
+            const newRow = [];
+            data.attendItem.forEach(async (element) => {
+                newRow.push(
+                    createData(
+                        element.scheduleItem.service.name,
+                        element.scheduleItem.noOfRepetition,
+                        element.scheduleItem.noOfSet,
+                        element.scheduleItem.timeBySeconds,
+                        element.totalDonePercentage.toString().concat('%')
+                    )
+                );
+            });
+            setRows(newRow);
+        }
+    }, []);
     return (
         <>
             <SubCard
@@ -135,7 +160,9 @@ const ScheduleDetails = ({ size, data }) => {
                                 <TableHead>
                                     <TableRow>
                                         <StyledTableCell style={{ marginLeft: '50px' }}>Activity</StyledTableCell>
-                                        <StyledTableCell align="center">Body Part</StyledTableCell>
+                                        <StyledTableCell align="center">Repetitions</StyledTableCell>
+                                        <StyledTableCell align="center">Set</StyledTableCell>
+                                        <StyledTableCell align="center">Time (Seconds)</StyledTableCell>
                                         <StyledTableCell align="center">Done Percentage&nbsp;(g)</StyledTableCell>
                                     </TableRow>
                                 </TableHead>
@@ -145,7 +172,9 @@ const ScheduleDetails = ({ size, data }) => {
                                             <StyledTableCell style={{ marginLeft: '50px' }} component="th" scope="row">
                                                 {row.name}
                                             </StyledTableCell>
-                                            <StyledTableCell align="center">{row.bodyPart}</StyledTableCell>
+                                            <StyledTableCell align="center">{row.repetitions}</StyledTableCell>
+                                            <StyledTableCell align="center">{row.sets}</StyledTableCell>
+                                            <StyledTableCell align="center">{row.time}</StyledTableCell>
                                             <StyledTableCell align="center">{row.percentage}</StyledTableCell>
                                         </StyledTableRow>
                                     ))}

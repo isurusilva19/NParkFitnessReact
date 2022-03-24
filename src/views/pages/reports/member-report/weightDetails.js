@@ -154,19 +154,25 @@ const WeightDetails = ({ size, data }) => {
 
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
-    let monthArr = [5, 8, 4, 3, 6, 9, 5];
-    let yearArr = [5, 8, 4, 3, 6, 9, 5];
-    if (data !== undefined) {
-        monthArr = data.monthArr;
-        yearArr = data.yearArr;
-    }
+    // let attendance = [5, 8, 4, 3, 6, 9, 5];
 
     const [timeValue, setTimeValue] = React.useState(false);
-    // const [attendanceMonthChart, setAttendanceMonthChart] = React.useState();
+    const [attendanceChart, setAttendanceChart] = React.useState([5, 8, 4, 3, 6, 9, 5]);
     // const [attendanceYearChart, setAttendanceYearChart] = React.useState();
     const handleChangeTime = (event, newValue) => {
         setTimeValue(newValue);
     };
+
+    useEffect(async () => {
+        if (data !== undefined) {
+            const attendance = [];
+            data.bodyDetails.forEach((element) => {
+                attendance.push(element.weight);
+            });
+            console.log(attendance);
+            setAttendanceChart(attendance);
+        }
+    }, []);
 
     const chartYearData = {
         type: 'line',
@@ -178,11 +184,50 @@ const WeightDetails = ({ size, data }) => {
                 },
                 animations: {
                     enabled: false
+                },
+                dropShadow: {
+                    enabled: true,
+                    color: '#000',
+                    top: 18,
+                    left: 7,
+                    blur: 10,
+                    opacity: 0.2
+                }
+            },
+            title: {
+                text: '',
+                align: 'left',
+                margin: 20,
+                offsetX: 0,
+                offsetY: 0,
+                floating: false,
+                style: {
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    fontFamily: undefined,
+                    color: '#263238'
                 }
             },
             dataLabels: {
                 enabled: true,
-                formatter: (val, opts) => val.toFixed(0).concat(' kg')
+                formatter: (val, opts) => val,
+                textAnchor: 'start',
+                style: {
+                    fontSize: '12px',
+                    fontWeight: 'normal',
+                    paddingTop: 50
+                },
+                background: {
+                    enabled: true,
+                    backgroundColor: 'red',
+                    foreColor: '#fff',
+                    borderRadius: 2,
+                    padding: 4,
+                    opacity: 0.9,
+                    // borderWidth: 1,
+                    // borderColor: '#fff',
+                    margin: 20
+                }
             },
             colors: ['#9F41F2', '#66DA26', '#546E7A'],
             fill: {
@@ -193,9 +238,7 @@ const WeightDetails = ({ size, data }) => {
                 curve: 'smooth',
                 width: 4
             },
-            yaxis: {
-                min: 0
-            },
+            yaxis: {},
             tooltip: {
                 theme: 'dark',
                 fixed: {
@@ -226,7 +269,7 @@ const WeightDetails = ({ size, data }) => {
         series: [
             {
                 name: 'series1',
-                data: [5, 8, 4, 3, 6, 9, 5]
+                data: attendanceChart
             }
         ]
     };
