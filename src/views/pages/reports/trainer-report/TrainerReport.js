@@ -32,7 +32,8 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import FlagIcon from '@mui/icons-material/Flag';
 import MapIcon from '@mui/icons-material/Map';
 import TrainerDetails from './TrainerDetails';
-import BlueSquare from './BuleSquare ';
+import SquareCard from './SquareCard';
+import SmallCard from './SmallCard';
 
 // assets
 
@@ -180,16 +181,19 @@ const Report = ({ trainerData, memberCount, schedulePending, dietPending }) => {
                 <TrainerDetails data={trainerData} />
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={4}>
-                        <BlueSquare title="Member Count" amount={memberCount} isPrimary icon="person" />
+                        <SquareCard title="Member Count" amount={memberCount} isPrimary icon="person" />
                     </Grid>
                     <Grid item xs={4}>
-                        <BlueSquare title="Pending Schedules" amount={schedulePending} icon="schedule" />
+                        <SquareCard title="Pending Schedules" amount={schedulePending} icon="schedule" />
                     </Grid>
                     <Grid item xs={4}>
-                        <BlueSquare title="Pending Diet Plans" amount={dietPending} isPrimary icon="diet" />
+                        <SquareCard title="Pending Diet Plans" amount={dietPending} isPrimary icon="diet" />
                     </Grid>
-                    <Grid item xs={4}>
-                        <BlueSquare title="Member Count" amount="10" />
+                    <Grid item xs={6}>
+                        <SmallCard title="Schedule Count For Month" amount="100" />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <SmallCard title="Diet Plan Count For Month" amount="100" isPrimary />
                     </Grid>
                 </Grid>
             </SubCard>

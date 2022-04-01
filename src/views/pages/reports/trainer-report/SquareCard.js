@@ -147,7 +147,7 @@ const useStyles = makeStyles((theme) => ({
 
 //= ==========================|| DASHBOARD DEFAULT - EARNING CARD ||===========================//
 
-const BlueSquare = ({ isLoading, amount, title, isPrimary, icon }) => {
+const SquareCard = ({ isLoading, amount, title, isPrimary, icon }) => {
     const classes = useStyles();
 
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -257,7 +257,7 @@ const BlueSquare = ({ isLoading, amount, title, isPrimary, icon }) => {
     );
 };
 
-BlueSquare.propTypes = {
+SquareCard.propTypes = {
     isLoading: PropTypes.bool,
     isPrimary: PropTypes.bool,
     icon: PropTypes.string,
@@ -265,4 +265,4 @@ BlueSquare.propTypes = {
     title: PropTypes.string
 };
 
-export default BlueSquare;
+export default SquareCard;
