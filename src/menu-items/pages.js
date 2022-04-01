@@ -103,10 +103,12 @@ const pages = {
                     breadcrumbs: false
                 },
                 {
-                    id: 'material-icons',
-                    title: 'Material Icons',
+                    id: 'trainer-report',
+                    title: 'Trainer Report',
                     type: 'item',
-                    url: '/icons/material-icons',
+                    url: '/pages/report/trainerReport',
+                    external: true,
+                    target: true,
                     breadcrumbs: false
                 }
             ]

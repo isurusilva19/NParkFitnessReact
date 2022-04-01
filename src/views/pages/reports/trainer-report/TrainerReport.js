@@ -31,11 +31,8 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import FlagIcon from '@mui/icons-material/Flag';
 import MapIcon from '@mui/icons-material/Map';
-import MemberDetails from './MemberDetails';
-import WeightDetails from './WeightDetails';
-import AttendDetails from './AttendDetails';
-import ScheduleDetails from './ScheduleDetails';
-import DietDetails from './DietDetails';
+import TrainerDetails from './TrainerDetails';
+import BlueSquare from './BuleSquare ';
 
 // assets
 
@@ -146,10 +143,10 @@ const CustomTypography = withStyles({
     }
 })(MuiTypography);
 
-const Report = ({ size, memberData, weightData, attendanceData, scheduleData, dietData }) => {
+const Report = ({ trainerData, memberCount, schedulePending, dietPending }) => {
     theme = useTheme();
     const classes = useStyles();
-    console.log(memberData);
+    console.log(trainerData);
 
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
     return (
@@ -175,16 +172,26 @@ const Report = ({ size, memberData, weightData, attendanceData, scheduleData, di
                     gutterBottom
                     variant="h3"
                 >
-                    Member Report
+                    Trainer Report
                 </Typography>
                 <Typography variant="h5" fontSize="14px" textAlign="center" marginBottom="40px">
                     NPartFitness
                 </Typography>
-                <MemberDetails data={memberData} />
-                <ScheduleDetails data={scheduleData} />
-                <WeightDetails data={weightData} />
-                <AttendDetails data={attendanceData} />
-                <DietDetails data={dietData} />
+                <TrainerDetails data={trainerData} />
+                <Grid container spacing={gridSpacing}>
+                    <Grid item xs={4}>
+                        <BlueSquare title="Member Count" amount={memberCount} isPrimary icon="person" />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <BlueSquare title="Pending Schedules" amount={schedulePending} icon="schedule" />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <BlueSquare title="Pending Diet Plans" amount={dietPending} isPrimary icon="diet" />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <BlueSquare title="Member Count" amount="10" />
+                    </Grid>
+                </Grid>
             </SubCard>
         </>
     );
@@ -192,70 +199,33 @@ const Report = ({ size, memberData, weightData, attendanceData, scheduleData, di
 
 //= ===============================|| Payment Success Page ||================================//
 
-const MemberReport = () => {
+const TrainerReport = () => {
     const theme = useTheme();
     const classes = useStyles();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
     const componentRef = useRef(null);
-    const [memberData, setMemberData] = React.useState(null);
-    const [weightData, setWeightData] = React.useState(null);
-    const [attendanceData, setAttendanceData] = React.useState(null);
-    const [dietData, setDietData] = React.useState(null);
-    const [scheduleData, setScheduleData] = React.useState(null);
+    const [trainerData, setTrainerData] = React.useState(null);
+    const [serviceCount, setServiceCount] = React.useState(null);
+    const [memberCount, setMemberCount] = React.useState(null);
+    const [exMemberCount, setExMemberCount] = React.useState(null);
+    const [dietData, setPendingDietCount] = React.useState(null);
+    const [scheduleData, setPendingScheduleCount] = React.useState(null);
     const [isDataLoading, setDataLoading] = React.useState(true);
     const [display, setDisplay] = React.useState('none');
 
-    const memberId = 1;
+    const trainerId = 4;
     const userId = 1;
-    function getMemberDetails() {
+    const branchId = 1;
+    function getTrainerDetails() {
         // let arr = [];
-        HttpCommon.get(`/api/payment/getAllPaymentByMemberId/${memberId}`).then((response) => {
-            console.log(response.data.data);
-            setMemberData(response.data.data);
 
-            HttpCommon.get(`/api/bodyDetails/getBodyDetailsByUserId/${userId}`).then((response) => {
-                if (response.data.data !== undefined && response.data.data.bodyDetails.length > 8) {
-                    response.data.data.bodyDetails = response.data.data.bodyDetails.slice(-8);
-                }
-                console.log(response.data.data);
-                setWeightData(response.data.data);
-
-                HttpCommon.post(`/api/attendance/getAttendanceByMemberIdAndMonth`, {
-                    date: new Date().toISOString().slice(0, 7),
-                    membershipId: memberId
-                }).then((response) => {
-                    console.log(response.data.data);
-                    setAttendanceData(response.data.data);
-
-                    HttpCommon.get(`/api/dietPlan/getDietPlanAndMealByUserId/${userId}`).then((response) => {
-                        console.log(response.data.data);
-                        setDietData(response.data.data);
-
-                        HttpCommon.post(`/api/attendItem/getAllAttendItemByMemberIdAndDate/`, {
-                            date: new Date().toISOString().slice(0, 10),
-                            membershipId: memberId
-                        }).then((response) => {
-                            console.log(response.data.data);
-
-                            if (response.data.data.attendItem.length === 0) {
-                                HttpCommon.get(`/api/scheduleItem/getScheduleItemByMemberId/${memberId}`).then((response) => {
-                                    console.log(response.data.data);
-                                    setScheduleData(response.data.data);
-                                    setDataLoading(false);
-                                });
-                            } else {
-                                setScheduleData(response.data.data);
-                                setDataLoading(false);
-                            }
-                        });
-                    });
-                });
-            });
-
-            if (response.data.data.member === null) {
+        HttpCommon.get(`/api/user/${trainerId}`).then((response1) => {
+            console.log(response1.data.data);
+            setTrainerData(response1.data.data);
+            if (response1.data.data === null) {
                 Store.addNotification({
                     title: 'Error Occured!',
-                    message: 'Enter Member Id Cannot Found In Your Gym',
+                    message: 'Enter Trainer Id Cannot Found In Your Gym',
                     type: 'danger',
                     insert: 'top',
                     container: 'top-right',
@@ -268,6 +238,42 @@ const MemberReport = () => {
                     width: 500
                 });
             }
+            HttpCommon.post(`api/dashboard/getMemberDetails/${trainerId}`, { branchId }).then(async (response) => {
+                console.log(response.data.data);
+                setMemberCount(response.data.data.memberCount);
+                setServiceCount(response.data.data.serviceCount);
+                setExMemberCount(response.data.data.exMemberCount);
+                // setMemberData(response.data.data.memberData);
+
+                let tempScheduleCount = 0;
+                let tempDietCount = 0;
+                await Promise.all(
+                    response.data.data.memberData.map((element) => {
+                        if (!element.isDietAvailable) {
+                            tempDietCount += 1;
+                        }
+                        if (element.scheduleExpireDate !== null) {
+                            const d1 = Date.parse(element.scheduleExpireDate);
+                            const today = new Date().toISOString().slice(0, 10);
+                            console.log('element.scheduleExpireDate<today');
+                            console.log(element.scheduleExpireDate < today);
+                            if (element.scheduleExpireDate < today) {
+                                tempScheduleCount += 1;
+                            }
+                        } else {
+                            tempScheduleCount += 1;
+                        }
+                        return 0;
+                    })
+                );
+                setPendingDietCount(tempDietCount);
+                setPendingScheduleCount(tempScheduleCount);
+
+                console.log('Is It Done2');
+
+                setDataLoading(false);
+                // setLoading(false);
+            });
         });
     }
 
@@ -282,9 +288,9 @@ const MemberReport = () => {
     useEffect(async () => {
         setDataLoading(true);
 
-        console.log(memberId);
-        if (memberId !== undefined) {
-            getMemberDetails();
+        console.log(trainerId);
+        if (trainerId !== undefined) {
+            getTrainerDetails();
         }
     }, []);
 
@@ -319,12 +325,10 @@ const MemberReport = () => {
                                         }}
                                     > */}
                                     <Report
-                                        size={12}
-                                        memberData={memberData}
-                                        weightData={weightData}
-                                        attendanceData={attendanceData}
-                                        scheduleData={scheduleData}
-                                        dietData={dietData}
+                                        trainerData={trainerData}
+                                        memberCount={memberCount}
+                                        schedulePending={scheduleData}
+                                        dietPending={dietData}
                                     />
                                     {/* </SubCard> */}
                                     <div style={{ textAlign: 'right' }}>
@@ -347,11 +351,10 @@ const MemberReport = () => {
                                             </Typography>
                                             <ComponentToPrint
                                                 ref={componentRef}
-                                                memberData={memberData}
-                                                weightData={weightData}
-                                                attendanceData={attendanceData}
-                                                scheduleData={scheduleData}
-                                                dietData={dietData}
+                                                trainerData={trainerData}
+                                                memberCount={memberCount}
+                                                schedulePending={scheduleData}
+                                                dietPending={dietData}
                                                 classes={classes}
                                             />
                                         </div>
@@ -372,7 +375,7 @@ const MemberReport = () => {
 export class ComponentToPrint extends React.PureComponent {
     render() {
         // const classes = this.props;
-        const { memberData, weightData, attendanceData, scheduleData, dietData, classes } = this.props;
+        const { trainerData, memberCount, schedulePending, dietPending, classes } = this.props;
         // console.log(this.props.centerPayData); // result: 'some_value'
         // console.log(this.props); // result: 'some_value'
         return (
@@ -391,11 +394,10 @@ export class ComponentToPrint extends React.PureComponent {
                         > */}
                         <div>
                             <Report
-                                memberData={memberData}
-                                weightData={weightData}
-                                attendanceData={attendanceData}
-                                scheduleData={scheduleData}
-                                dietData={dietData}
+                                trainerData={trainerData}
+                                memberCount={memberCount}
+                                schedulePending={schedulePending}
+                                dietPending={dietPending}
                             />
                         </div>
                         {/* </SubCard> */}
@@ -406,4 +408,4 @@ export class ComponentToPrint extends React.PureComponent {
     }
 }
 
-export default MemberReport;
+export default TrainerReport;
