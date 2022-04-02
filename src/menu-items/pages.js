@@ -110,6 +110,15 @@ const pages = {
                     external: true,
                     target: true,
                     breadcrumbs: false
+                },
+                {
+                    id: 'branch-report',
+                    title: 'Branch Report',
+                    type: 'item',
+                    url: '/pages/report/branchReport',
+                    external: true,
+                    target: true,
+                    breadcrumbs: false
                 }
             ]
         },

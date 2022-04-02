@@ -117,36 +117,7 @@ const CustomTypography = withStyles({
     }
 })(MuiTypography);
 
-const ShadowBox = ({ image, name }) => {
-    theme = useTheme();
-
-    return (
-        <Card sx={{ height: 150, width: 150, mb: 3, boxShadow: 0 }}>
-            <Box
-                sx={{
-                    height: 150,
-                    width: 150,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    py: 3,
-                    bgcolor: theme.palette.primary.light,
-                    color: theme.palette.grey[800]
-                }}
-            >
-                {image !== null ? (
-                    <CardMedia component="img" image={image} alt="green iguana" />
-                ) : (
-                    <MuiTypography style={{ fontSize: '40px' }} right variant="subtitle1">
-                        {name}
-                    </MuiTypography>
-                )}
-            </Box>
-        </Card>
-    );
-};
-
-const WeightDetails = ({ size, data }) => {
+const AttendanceChart = ({ size, data }) => {
     theme = useTheme();
     const classes = useStyles();
     console.log(data);
@@ -165,12 +136,7 @@ const WeightDetails = ({ size, data }) => {
 
     useEffect(async () => {
         if (data !== undefined) {
-            const attendance = [];
-            data.bodyDetails.forEach((element) => {
-                attendance.push(element.weight);
-            });
-            console.log(attendance);
-            setAttendanceChart(attendance);
+            setAttendanceChart(data);
         }
     }, []);
 
@@ -211,7 +177,7 @@ const WeightDetails = ({ size, data }) => {
             dataLabels: {
                 enabled: true,
                 formatter: (val, opts) => val,
-                textAnchor: 'middle',
+                textAnchor: 'start',
                 offsetX: 0,
                 offsetY: -7,
                 style: {
@@ -247,7 +213,7 @@ const WeightDetails = ({ size, data }) => {
             grid: {
                 padding: {
                     top: 20,
-                    right: 40,
+                    right: 20,
                     bottom: 20,
                     left: 20
                 }
@@ -262,7 +228,7 @@ const WeightDetails = ({ size, data }) => {
                 },
                 y: {
                     title: {
-                        formatter: () => 'Weight(kg)'
+                        formatter: () => 'Attendance'
                     }
                 },
                 marker: {
@@ -273,7 +239,7 @@ const WeightDetails = ({ size, data }) => {
                     fillOpacity: 1,
                     size: 2,
                     shape: 'circle',
-                    radius: 1,
+                    radius: 2,
                     offsetX: 0,
                     offsetY: 0
                 }
@@ -292,7 +258,7 @@ const WeightDetails = ({ size, data }) => {
             <SubCard
                 className={classes.card}
                 sx={{ color: 'white', maxWidth: 900, minWidth: 100, marginBottom: '10px' }}
-                title="Weight Detailes"
+                title="Attendance Detailes"
             >
                 <Grid container alignItems="center" justifyContent="center" spacing={gridSpacing}>
                     <Grid align="center" item xs={12}>
@@ -304,4 +270,4 @@ const WeightDetails = ({ size, data }) => {
     );
 };
 
-export default WeightDetails;
+export default AttendanceChart;

@@ -10,6 +10,7 @@ const AuthRegister3 = Loadable(lazy(() => import('views/pages/authentication/aut
 const PaymentSuccess = Loadable(lazy(() => import('views/pages/subscription/PaymentSuccessPage')));
 const MemberReport = Loadable(lazy(() => import('views/pages/reports/member-report/MemberReport')));
 const TrainerReport = Loadable(lazy(() => import('views/pages/reports/trainer-report/TrainerReport')));
+const BranchReport = Loadable(lazy(() => import('views/pages/reports/branch-report/BranchReport')));
 
 // ===========================|| AUTHENTICATION ROUTING ||=========================== //
 
@@ -40,6 +41,10 @@ const AuthenticationRoutes = {
         {
             path: '/pages/report/trainerReport',
             element: <TrainerReport />
+        },
+        {
+            path: '/pages/report/branchReport',
+            element: <BranchReport />
         }
     ]
 };

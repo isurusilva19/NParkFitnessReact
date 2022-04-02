@@ -20,6 +20,9 @@ import ArchiveTwoToneIcon from '@material-ui/icons/ArchiveOutlined';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import AccessibilityIcon from '@mui/icons-material/Accessibility';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+
 // style constant
 const useStyles = makeStyles((theme) => ({
     primaryCard: {
@@ -166,6 +169,14 @@ const SquareCard = ({ isLoading, amount, title, isPrimary, icon }) => {
             case 'diet':
                 console.log(icon);
                 setSelectIcon(<RestaurantMenuIcon className={classes.menuItem} />);
+                break;
+            case 'trainer':
+                console.log(icon);
+                setSelectIcon(<SupervisorAccountIcon className={classes.menuItem} />);
+                break;
+            case 'manager':
+                console.log(icon);
+                setSelectIcon(<AccessibilityIcon className={classes.menuItem} />);
                 break;
             default:
                 console.log(icon);
