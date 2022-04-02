@@ -119,6 +119,15 @@ const pages = {
                     external: true,
                     target: true,
                     breadcrumbs: false
+                },
+                {
+                    id: 'gym-report',
+                    title: 'Gym Report',
+                    type: 'item',
+                    url: '/pages/report/gymReport',
+                    external: true,
+                    target: true,
+                    breadcrumbs: false
                 }
             ]
         },

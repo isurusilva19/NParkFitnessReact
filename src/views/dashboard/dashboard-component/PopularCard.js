@@ -167,7 +167,11 @@ const PopularCard = ({ isLoading, data }) => {
                                         ))}
                                     </>
                                 ) : (
-                                    <></>
+                                    <>
+                                        <Typography variant="subtitle1" color="inherit">
+                                            No Branch Have Income Yet.
+                                        </Typography>
+                                    </>
                                 )}
                             </Grid>
                         </Grid>
