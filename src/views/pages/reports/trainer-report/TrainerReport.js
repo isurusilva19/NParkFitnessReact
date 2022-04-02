@@ -144,7 +144,7 @@ const CustomTypography = withStyles({
     }
 })(MuiTypography);
 
-const Report = ({ trainerData, memberCount, schedulePending, dietPending }) => {
+const Report = ({ trainerData, memberCount, schedulePending, dietPending, scheduleMonthlyCount }) => {
     theme = useTheme();
     const classes = useStyles();
     console.log(trainerData);
@@ -190,11 +190,17 @@ const Report = ({ trainerData, memberCount, schedulePending, dietPending }) => {
                         <SquareCard title="Pending Diet Plans" amount={dietPending} isPrimary icon="diet" />
                     </Grid>
                     <Grid item xs={6}>
-                        <SmallCard title="Schedule Count For Month" amount="100" />
+                        <SmallCard title="Schedule Count For Month" amount={scheduleMonthlyCount} />
                     </Grid>
-                    <Grid item xs={6}>
-                        <SmallCard title="Diet Plan Count For Month" amount="100" isPrimary />
-                    </Grid>
+                    {trainerData.branch !== undefined ? (
+                        <Grid item xs={6}>
+                            <SmallCard title="Working Branch Name" amount={trainerData.branch.name} isPrimary />
+                        </Grid>
+                    ) : (
+                        <Grid item xs={6}>
+                            <SmallCard title="Working Branch Name" amount="Not Found" isPrimary />
+                        </Grid>
+                    )}
                 </Grid>
             </SubCard>
         </>
@@ -208,12 +214,13 @@ const TrainerReport = () => {
     const classes = useStyles();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
     const componentRef = useRef(null);
-    const [trainerData, setTrainerData] = React.useState(null);
+    const [trainerData, setTrainerData] = React.useState();
     const [serviceCount, setServiceCount] = React.useState(null);
     const [memberCount, setMemberCount] = React.useState(null);
     const [exMemberCount, setExMemberCount] = React.useState(null);
     const [dietData, setPendingDietCount] = React.useState(null);
     const [scheduleData, setPendingScheduleCount] = React.useState(null);
+    const [scheduleMonthlyCount, setScheduleMonthlyCount] = React.useState(null);
     const [isDataLoading, setDataLoading] = React.useState(true);
     const [display, setDisplay] = React.useState('none');
 
@@ -222,61 +229,79 @@ const TrainerReport = () => {
     const branchId = 1;
     function getTrainerDetails() {
         // let arr = [];
-
-        HttpCommon.get(`/api/user/${trainerId}`).then((response1) => {
+        HttpCommon.post(`/api/schedule/getScheduleCountByTrainerIdAndMonth/${trainerId}`, {
+            month: new Date().toISOString().slice(0, 7)
+        }).then((response1) => {
             console.log(response1.data.data);
-            setTrainerData(response1.data.data);
-            if (response1.data.data === null) {
-                Store.addNotification({
-                    title: 'Error Occured!',
-                    message: 'Enter Trainer Id Cannot Found In Your Gym',
-                    type: 'danger',
-                    insert: 'top',
-                    container: 'top-right',
-                    animationIn: ['animate__animated', 'animate__fadeIn'],
-                    animationOut: ['animate__animated', 'animate__fadeOut'],
-                    dismiss: {
-                        duration: 5000,
-                        onScreen: true
-                    },
-                    width: 500
-                });
-            }
-            HttpCommon.post(`api/dashboard/getMemberDetails/${trainerId}`, { branchId }).then(async (response) => {
-                console.log(response.data.data);
-                setMemberCount(response.data.data.memberCount);
-                setServiceCount(response.data.data.serviceCount);
-                setExMemberCount(response.data.data.exMemberCount);
-                // setMemberData(response.data.data.memberData);
+            setScheduleMonthlyCount(response1.data.data);
+            HttpCommon.get(`/api/user/${trainerId}`).then((response1) => {
+                console.log(response1.data.data);
+                setTrainerData(response1.data.data);
+                if (response1.data.data === null) {
+                    Store.addNotification({
+                        title: 'Error Occured!',
+                        message: 'Enter Trainer Id Cannot Found In Your Gym',
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-right',
+                        animationIn: ['animate__animated', 'animate__fadeIn'],
+                        animationOut: ['animate__animated', 'animate__fadeOut'],
+                        dismiss: {
+                            duration: 5000,
+                            onScreen: true
+                        },
+                        width: 500
+                    });
+                }
 
-                let tempScheduleCount = 0;
-                let tempDietCount = 0;
-                await Promise.all(
-                    response.data.data.memberData.map((element) => {
-                        if (!element.isDietAvailable) {
-                            tempDietCount += 1;
-                        }
-                        if (element.scheduleExpireDate !== null) {
-                            const d1 = Date.parse(element.scheduleExpireDate);
-                            const today = new Date().toISOString().slice(0, 10);
-                            console.log('element.scheduleExpireDate<today');
-                            console.log(element.scheduleExpireDate < today);
-                            if (element.scheduleExpireDate < today) {
+                HttpCommon.post(`api/dashboard/getMemberDetails/${trainerId}`, { branchId }).then(async (response) => {
+                    console.log(response.data.data);
+                    setMemberCount(response.data.data.memberCount);
+                    setServiceCount(response.data.data.serviceCount);
+                    setExMemberCount(response.data.data.exMemberCount);
+                    // setMemberData(response.data.data.memberData);
+
+                    let tempScheduleCount = 0;
+                    let tempDietCount = 0;
+                    await Promise.all(
+                        response.data.data.memberData.map((element) => {
+                            if (!element.isDietAvailable) {
+                                tempDietCount += 1;
+                            }
+                            if (element.scheduleExpireDate !== null) {
+                                const d1 = Date.parse(element.scheduleExpireDate);
+                                const today = new Date().toISOString().slice(0, 10);
+                                console.log('element.scheduleExpireDate<today');
+                                console.log(element.scheduleExpireDate < today);
+                                if (element.scheduleExpireDate < today) {
+                                    tempScheduleCount += 1;
+                                }
+                            } else {
                                 tempScheduleCount += 1;
                             }
-                        } else {
-                            tempScheduleCount += 1;
-                        }
-                        return 0;
-                    })
-                );
-                setPendingDietCount(tempDietCount);
-                setPendingScheduleCount(tempScheduleCount);
+                            return 0;
+                        })
+                    );
+                    setPendingDietCount(tempDietCount);
+                    setPendingScheduleCount(tempScheduleCount);
+                    if (response1.data.data.branchId !== null) {
+                        HttpCommon.get(`/api/branch/${response1.data.data.branchId}`).then((response1) => {
+                            console.log(response1.data.data);
+                            const trainer = trainerData;
+                            trainer.branch = response1.data.data;
+                            setTrainerData(trainer);
+                            console.log('Is It Done2');
 
-                console.log('Is It Done2');
+                            setDataLoading(false);
+                        });
+                    } else {
+                        console.log('Is It Done2');
 
-                setDataLoading(false);
-                // setLoading(false);
+                        setDataLoading(false);
+                    }
+
+                    // setLoading(false);
+                });
             });
         });
     }
@@ -333,6 +358,7 @@ const TrainerReport = () => {
                                         memberCount={memberCount}
                                         schedulePending={scheduleData}
                                         dietPending={dietData}
+                                        scheduleMonthlyCount={scheduleMonthlyCount}
                                     />
                                     {/* </SubCard> */}
                                     <div style={{ textAlign: 'right' }}>
@@ -359,6 +385,7 @@ const TrainerReport = () => {
                                                 memberCount={memberCount}
                                                 schedulePending={scheduleData}
                                                 dietPending={dietData}
+                                                scheduleMonthlyCount={scheduleMonthlyCount}
                                                 classes={classes}
                                             />
                                         </div>
@@ -379,7 +406,7 @@ const TrainerReport = () => {
 export class ComponentToPrint extends React.PureComponent {
     render() {
         // const classes = this.props;
-        const { trainerData, memberCount, schedulePending, dietPending, classes } = this.props;
+        const { trainerData, memberCount, schedulePending, dietPending, scheduleMonthlyCount, classes } = this.props;
         // console.log(this.props.centerPayData); // result: 'some_value'
         // console.log(this.props); // result: 'some_value'
         return (
@@ -402,6 +429,7 @@ export class ComponentToPrint extends React.PureComponent {
                                 memberCount={memberCount}
                                 schedulePending={schedulePending}
                                 dietPending={dietPending}
+                                scheduleMonthlyCount={scheduleMonthlyCount}
                             />
                         </div>
                         {/* </SubCard> */}

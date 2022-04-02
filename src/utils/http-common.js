@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import { store } from '../store/index';
 import { Navigate } from 'react-router-dom';
 import React, { Component } from 'react';
+import { Store } from 'react-notifications-component';
+
 // const { token } = store.getState();
 
 // // const token = customization.token;
@@ -53,6 +55,21 @@ instance.interceptors.response.use(
         if (error.response.status === 402) {
             console.log('error');
             window.location = '/';
+        } else {
+            Store.addNotification({
+                title: 'Error Occured!',
+                message: 'Cannot find the Server',
+                type: 'danger',
+                insert: 'top',
+                container: 'top-right',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                    onScreen: true
+                },
+                width: 500
+            });
         }
         return Promise.reject(error);
     }
