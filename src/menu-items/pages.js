@@ -128,6 +128,15 @@ const pages = {
                     external: true,
                     target: true,
                     breadcrumbs: false
+                },
+                {
+                    id: 'admin-report',
+                    title: 'Admin Report',
+                    type: 'item',
+                    url: '/pages/report/adminReport',
+                    external: true,
+                    target: true,
+                    breadcrumbs: false
                 }
             ]
         },

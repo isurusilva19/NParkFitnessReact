@@ -134,7 +134,11 @@ const AdminDashboard = () => {
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item lg={4} md={6} sm={6} xs={12}>
-                                <IncomeCard isLoading={isLoading} amount={memberCount} title="Total Member Count" />
+                                <IncomeCard
+                                    isLoading={isLoading}
+                                    amount={memberCount === undefined ? 0 : memberCount}
+                                    title="Total Member Count"
+                                />
                             </Grid>
                             <Grid item lg={4} md={6} sm={6} xs={12}>
                                 <BlueCard isLoading={isLoading} amount={gymCount} title="Total Gym Count" />
@@ -149,7 +153,11 @@ const AdminDashboard = () => {
                                         />
                                     </Grid>
                                     <Grid item sm={6} xs={12} md={6} lg={12}>
-                                        <SmallLightCard isLoading={isLoading} amount="4 Membership" title="Expired Membership" />
+                                        <SmallLightCard
+                                            isLoading={isLoading}
+                                            amount={`${exMemberCount === undefined ? 0 : exMemberCount} Membership`}
+                                            title="Inactive Membership"
+                                        />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -158,7 +166,11 @@ const AdminDashboard = () => {
                     <Grid item xs={12}>
                         <Grid container spacing={gridSpacing}>
                             <Grid item sm={6} xs={12} md={4} lg={4}>
-                                <SmallDarkCard isLoading={isLoading} amount={`${1} Branches`} title="Total Inactive Branch" />
+                                <SmallDarkCard
+                                    isLoading={isLoading}
+                                    amount={`${inActiveBranchCount === undefined ? 0 : inActiveBranchCount} Branches`}
+                                    title="Total Inactive Branch"
+                                />
                             </Grid>
                             <Grid item sm={6} xs={12} md={4} lg={4}>
                                 <SmallLightCard isLoading={isLoading} amount={`${trainerCount} Trainers`} title="Total Trainers" />

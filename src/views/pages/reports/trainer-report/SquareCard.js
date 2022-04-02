@@ -22,6 +22,9 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import AccessibilityIcon from '@mui/icons-material/Accessibility';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 
 // style constant
 const useStyles = makeStyles((theme) => ({
@@ -177,6 +180,18 @@ const SquareCard = ({ isLoading, amount, title, isPrimary, icon }) => {
             case 'manager':
                 console.log(icon);
                 setSelectIcon(<AccessibilityIcon className={classes.menuItem} />);
+                break;
+            case 'active':
+                console.log(icon);
+                setSelectIcon(<FactCheckIcon className={classes.menuItem} />);
+                break;
+            case 'inactive':
+                console.log(icon);
+                setSelectIcon(<ErrorOutlineIcon className={classes.menuItem} />);
+                break;
+            case 'service':
+                console.log(icon);
+                setSelectIcon(<FitnessCenterIcon className={classes.menuItem} />);
                 break;
             default:
                 console.log(icon);
