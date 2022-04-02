@@ -37,6 +37,7 @@ import BranchDetails from './BranchDetails';
 import TotalGrowthBarChart from 'views/dashboard/dashboard-component/TotalGrowthBarChart';
 import WeightDetails from '../member-report/WeightDetails';
 import AttendanceChart from './AttendanceChart';
+import ServiceCard from 'views/dashboard/dashboard-component/ServiceCard';
 
 // assets
 
@@ -160,7 +161,7 @@ const Report = ({
 }) => {
     theme = useTheme();
     const classes = useStyles();
-    console.log(branchData);
+    console.log(serviceData);
 
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
     return (
@@ -186,7 +187,7 @@ const Report = ({
                     gutterBottom
                     variant="h3"
                 >
-                    Trainer Report
+                    Branch Report
                 </Typography>
                 <Typography variant="h5" fontSize="14px" textAlign="center" marginBottom="40px">
                     NPartFitness
@@ -211,6 +212,8 @@ const Report = ({
                 </Grid>
                 <AttendanceChart data={attendanceCount.yearArr} />
                 <TotalGrowthBarChart incomeData={incomeCount} />
+                <div style={{ height: '10px' }} />
+                <ServiceCard data={serviceData} />
             </SubCard>
         </>
     );
@@ -373,7 +376,7 @@ const BranchReport = () => {
                                     {/* </SubCard> */}
                                     <div style={{ textAlign: 'right' }}>
                                         <ReactToPrint
-                                            documentTitle="Member Report"
+                                            documentTitle="Branch Report"
                                             trigger={() => (
                                                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '50px' }}>
                                                     <AnimateButton>
