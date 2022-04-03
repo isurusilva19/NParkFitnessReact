@@ -191,6 +191,17 @@ const AttendanceCard = ({ isLoading, data }) => {
             yaxis: {
                 min: 0
             },
+            markers: {
+                size: 3
+            },
+            grid: {
+                padding: {
+                    top: 7,
+                    right: 10,
+                    bottom: 5,
+                    left: 10
+                }
+            },
             tooltip: {
                 theme: 'dark',
                 fixed: {
