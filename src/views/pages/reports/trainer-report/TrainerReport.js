@@ -285,10 +285,11 @@ const TrainerReport = () => {
                     setPendingDietCount(tempDietCount);
                     setPendingScheduleCount(tempScheduleCount);
                     if (response1.data.data.branchId !== null) {
-                        HttpCommon.get(`/api/branch/${response1.data.data.branchId}`).then((response1) => {
+                        HttpCommon.get(`/api/branch/${response1.data.data.branchId}`).then((response4) => {
                             console.log(response1.data.data);
-                            const trainer = trainerData;
-                            trainer.branch = response1.data.data;
+                            console.log(trainerData);
+                            const trainer = response1.data.data;
+                            trainer.branch = response4.data.data;
                             setTrainerData(trainer);
                             console.log('Is It Done2');
 
