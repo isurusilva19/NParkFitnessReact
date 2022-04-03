@@ -72,6 +72,14 @@ const pages = {
             breadcrumbs: false
         },
         {
+            id: 'subscriptionCreation',
+            title: 'SubscriptionTypes',
+            type: 'item',
+            url: '/pages/subscriptionTypes',
+            icon: IconReceipt,
+            breadcrumbs: false
+        },
+        {
             id: 'notification',
             title: 'Notification',
             type: 'item',
@@ -141,26 +149,18 @@ const pages = {
             ]
         },
         {
-            id: 'customerPayment3',
-            title: 'Branch Managment',
-            type: 'item',
-            url: '/sample-page',
-            icon: IconBuildingArch,
-            breadcrumbs: false
-        },
-        {
-            id: 'customerPayment4',
+            id: 'services',
             title: 'Services',
             type: 'item',
-            url: '/sample-page',
+            url: '/pages/services',
             icon: IconReportAnalytics,
             breadcrumbs: false
         },
         {
-            id: 'customerPayment5',
-            title: 'Member Managment',
+            id: 'employee-management',
+            title: 'Employee Managment',
             type: 'item',
-            url: '/sample-page',
+            url: '/pages/employeeManagement',
             icon: IconUsers,
             breadcrumbs: false
         }

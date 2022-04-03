@@ -35,7 +35,6 @@ import SquareCard from '../trainer-report/SquareCard';
 import SmallCard from '../trainer-report/SmallCard';
 import BranchDetails from './BranchDetails';
 import TotalGrowthBarChart from 'views/dashboard/dashboard-component/TotalGrowthBarChart';
-import WeightDetails from '../member-report/WeightDetails';
 import AttendanceChart from './AttendanceChart';
 import ServiceCard from 'views/dashboard/dashboard-component/ServiceCard';
 

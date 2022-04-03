@@ -165,7 +165,6 @@ const ShadowBox = ({ image, name }) => {
     );
 };
 
-
 const ActivityCard = ({ cardDetails }) => {
     theme = useTheme();
     const classes = useStyles();

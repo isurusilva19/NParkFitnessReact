@@ -16,6 +16,9 @@ const Subscription = Loadable(lazy(() => import('views/pages/subscription/Subscr
 const Notification = Loadable(lazy(() => import('views/pages/notification/Notification')));
 const CalorieCal = Loadable(lazy(() => import('views/pages/calorie-calculator/CalorieCalculator')));
 const MemberReport = Loadable(lazy(() => import('views/pages/reports/member-report/MemberReport')));
+const Services = Loadable(lazy(() => import('views/pages/services/Services')));
+const SubscriptionTypes = Loadable(lazy(() => import('views/pages/subscriptionType/SubscriptionType')));
+const EmployeeManagement = Loadable(lazy(() => import('views/pages/employee-management/EmployeeManagement')));
 
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
@@ -68,6 +71,10 @@ const MainRoutes = {
             element: <Subscription />
         },
         {
+            path: '/subscriptionTypes',
+            element: <SubscriptionTypes />
+        },
+        {
             path: '/notification',
             element: <Notification />
         },
@@ -78,6 +85,14 @@ const MainRoutes = {
         {
             path: '/memberReport',
             element: <MemberReport />
+        },
+        {
+            path: '/services',
+            element: <Services />
+        },
+        {
+            path: '/employeeManagement',
+            element: <EmployeeManagement />
         },
         {
             path: '/utils/util-typography',

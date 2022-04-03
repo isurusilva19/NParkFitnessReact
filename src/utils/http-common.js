@@ -51,8 +51,8 @@ instance.interceptors.response.use(
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
         console.log(error);
-        console.log(error.response.status);
-        if (error.response.status === 402) {
+        console.log(error.response);
+        if (error.response !== undefined && error.response.status === 402) {
             console.log('error');
             window.location = '/';
         } else {
