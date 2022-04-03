@@ -190,8 +190,8 @@ const NotificationSection = () => {
                 // ...
             });
 
-            setNotifications(notificationArr);
-            setSelectNotifications(notificationArr);
+            setNotifications(notificationArr.slice(0, 6));
+            setSelectNotifications(notificationArr.slice(0, 6));
             setUnReadCount(tempUnReadCount);
             //   updateStarCount(postElement, data);
             console.log(notificationArr);
