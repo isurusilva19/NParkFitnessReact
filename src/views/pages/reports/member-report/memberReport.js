@@ -36,6 +36,7 @@ import WeightDetails from './WeightDetails';
 import AttendDetails from './AttendDetails';
 import ScheduleDetails from './ScheduleDetails';
 import DietDetails from './DietDetails';
+import GoalDetails from './GoalDetails';
 
 // assets
 
@@ -146,7 +147,7 @@ const CustomTypography = withStyles({
     }
 })(MuiTypography);
 
-const Report = ({ size, memberData, weightData, attendanceData, scheduleData, dietData }) => {
+const Report = ({ size, memberData, weightData, attendanceData, scheduleData, dietData, goalData }) => {
     theme = useTheme();
     const classes = useStyles();
     console.log(memberData);
@@ -181,6 +182,7 @@ const Report = ({ size, memberData, weightData, attendanceData, scheduleData, di
                     NPartFitness
                 </Typography>
                 <MemberDetails data={memberData} />
+                <GoalDetails data={goalData} />
                 <ScheduleDetails data={scheduleData} />
                 <WeightDetails data={weightData} />
                 <AttendDetails data={attendanceData} />
@@ -201,6 +203,7 @@ const MemberReport = () => {
     const [weightData, setWeightData] = React.useState(null);
     const [attendanceData, setAttendanceData] = React.useState(null);
     const [dietData, setDietData] = React.useState(null);
+    const [goalData, setGoalData] = React.useState(null);
     const [scheduleData, setScheduleData] = React.useState(null);
     const [isDataLoading, setDataLoading] = React.useState(true);
     const [display, setDisplay] = React.useState('none');
@@ -231,22 +234,27 @@ const MemberReport = () => {
                         console.log(response.data.data);
                         setDietData(response.data.data);
 
-                        HttpCommon.post(`/api/attendItem/getAllAttendItemByMemberIdAndDate/`, {
-                            date: new Date().toISOString().slice(0, 10),
-                            membershipId: memberId
-                        }).then((response) => {
+                        HttpCommon.get(`/api/goal/getGoalByMemberId/${memberId}`).then((response) => {
                             console.log(response.data.data);
+                            setGoalData(response.data.data);
 
-                            if (response.data.data.attendItem.length === 0) {
-                                HttpCommon.get(`/api/scheduleItem/getScheduleItemByMemberId/${memberId}`).then((response) => {
-                                    console.log(response.data.data);
+                            HttpCommon.post(`/api/attendItem/getAllAttendItemByMemberIdAndDate/`, {
+                                date: new Date().toISOString().slice(0, 10),
+                                membershipId: memberId
+                            }).then((response) => {
+                                console.log(response.data.data);
+
+                                if (response.data.data.attendItem.length === 0) {
+                                    HttpCommon.get(`/api/scheduleItem/getScheduleItemByMemberId/${memberId}`).then((response) => {
+                                        console.log(response.data.data);
+                                        setScheduleData(response.data.data);
+                                        setDataLoading(false);
+                                    });
+                                } else {
                                     setScheduleData(response.data.data);
                                     setDataLoading(false);
-                                });
-                            } else {
-                                setScheduleData(response.data.data);
-                                setDataLoading(false);
-                            }
+                                }
+                            });
                         });
                     });
                 });
@@ -325,6 +333,7 @@ const MemberReport = () => {
                                         attendanceData={attendanceData}
                                         scheduleData={scheduleData}
                                         dietData={dietData}
+                                        goalData={goalData}
                                     />
                                     {/* </SubCard> */}
                                     <div style={{ textAlign: 'right' }}>
@@ -352,6 +361,7 @@ const MemberReport = () => {
                                                 attendanceData={attendanceData}
                                                 scheduleData={scheduleData}
                                                 dietData={dietData}
+                                                goalData={goalData}
                                                 classes={classes}
                                             />
                                         </div>
@@ -372,7 +382,7 @@ const MemberReport = () => {
 export class ComponentToPrint extends React.PureComponent {
     render() {
         // const classes = this.props;
-        const { memberData, weightData, attendanceData, scheduleData, dietData, classes } = this.props;
+        const { memberData, weightData, attendanceData, scheduleData, dietData, goalData, classes } = this.props;
         // console.log(this.props.centerPayData); // result: 'some_value'
         // console.log(this.props); // result: 'some_value'
         return (
@@ -396,6 +406,7 @@ export class ComponentToPrint extends React.PureComponent {
                                 attendanceData={attendanceData}
                                 scheduleData={scheduleData}
                                 dietData={dietData}
+                                goalData={goalData}
                             />
                         </div>
                         {/* </SubCard> */}
