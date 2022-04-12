@@ -1,8 +1,8 @@
 import { TextField, Button, Box, InputLabel, Select, MenuItem } from '@material-ui/core';
 import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
-// import { Box } from '@material-ui/core';
 import MuiPhoneNumber from 'material-ui-phone-number';
+// import { Box } from '@material-ui/core';
 
 const ThirdStep = ({ contactNo, street, lane, city, province, setContactNo, setStreet, setLane, setCity, setProvince }) => {
     const handleContactNo = (value) => {
