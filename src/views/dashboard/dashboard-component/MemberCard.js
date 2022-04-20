@@ -196,7 +196,7 @@ const MemberCard = ({ isLoading, data }) => {
                                                                 />
                                                             ) : (
                                                                 <Avatar
-                                                                    src="https://npark-fitness-bucket.s3.us-east-2.amazonaws.com/dp.jpg"
+                                                                    src="https://npark-fitness-bucket-2.s3.us-east-2.amazonaws.com/dp.jpg"
                                                                     variant="rounded"
                                                                     className={classes.avatarPrimary}
                                                                 />
