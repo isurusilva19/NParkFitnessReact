@@ -33,9 +33,10 @@ import UpgradePlanCard from './UpgradePlanCard';
 import { useNavigate } from 'react-router';
 
 // assets
-import { IconLogout, IconSearch, IconSettings } from '@tabler/icons';
-import User1 from 'assets/images/users/user-round.svg';
-
+import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
+import User1 from 'assets/images/dp.jpg';
+import HttpCommon from 'utils/http-common';
+import { deepOrange, deepPurple } from '@mui/material/colors';
 // style const
 const useStyles = makeStyles((theme) => ({
     navContainer: {
@@ -113,20 +114,24 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+let theme;
+
 // ===========================|| PROFILE MENU ||=========================== //
 
 const ProfileSection = () => {
     const classes = useStyles();
     const navigate = useNavigate();
-    const theme = useTheme();
+    theme = useTheme();
     const customization = useSelector((state) => state.customization);
 
     const [sdm, setSdm] = React.useState(true);
     const [value, setValue] = React.useState('');
+    const [userData, setUserData] = React.useState();
     const [notification, setNotification] = React.useState(false);
     const [selectedIndex] = React.useState(1);
 
     const [open, setOpen] = React.useState(false);
+    const [started, setStarted] = React.useState(false);
     const anchorRef = React.useRef(null);
 
     const handleToggle = () => {
@@ -145,8 +150,30 @@ const ProfileSection = () => {
         navigate('/', { replace: true });
     };
 
+    const handleAccount = (event) => {
+        navigate('/pages/account');
+    };
+
+    function getUserDetails(userId) {
+        // let arr = [];
+        HttpCommon.get(`/api/user/${userId}`).then((response) => {
+            console.log(response.data.data);
+            setUserData(response.data.data);
+        });
+    }
+
+    if (!started) {
+        console.log('rtyrty567');
+        console.log(started);
+        const key = localStorage.getItem('userID');
+        getUserDetails(key);
+        setStarted(true);
+    }
+
     const prevOpen = React.useRef(open);
     React.useEffect(() => {
+        const key = localStorage.getItem('userID');
+        getUserDetails(key);
         if (prevOpen.current === true && open === false) {
             anchorRef.current.focus();
         }
@@ -159,14 +186,35 @@ const ProfileSection = () => {
                 classes={{ label: classes.profileLabel }}
                 className={classes.profileChip}
                 icon={
-                    <Avatar
-                        src={User1}
-                        className={classes.headerAvatar}
-                        ref={anchorRef}
-                        aria-controls={open ? 'menu-list-grow' : undefined}
-                        aria-haspopup="true"
-                        color="inherit"
-                    />
+                    userData === undefined ? (
+                        <Avatar
+                            src={User1}
+                            className={classes.headerAvatar}
+                            ref={anchorRef}
+                            aria-controls={open ? 'menu-list-grow' : undefined}
+                            aria-haspopup="true"
+                            color="inherit"
+                        />
+                    ) : (
+                        <>
+                            {userData.image !== null ? (
+                                <Avatar
+                                    src={userData.image}
+                                    className={classes.headerAvatar}
+                                    ref={anchorRef}
+                                    aria-controls={open ? 'menu-list-grow' : undefined}
+                                    aria-haspopup="true"
+                                    color="inherit"
+                                />
+                            ) : (
+                                <Avatar sx={{ bgcolor: theme.palette.secondary.light, ml: '10px', width: 30, height: 30 }}>
+                                    <Typography style={{ fontSize: '16px', color: theme.palette.secondary.dark }} right variant="subtitle1">
+                                        {userData.firstName.charAt(0) + userData.lastName.charAt(0)}
+                                    </Typography>
+                                </Avatar>
+                            )}
+                        </>
+                    )
                 }
                 label={<IconSettings stroke={1.5} size="1.5rem" color={theme.palette.primary.main} />}
                 variant="outlined"
@@ -202,13 +250,13 @@ const ProfileSection = () => {
                                     <CardContent className={classes.cardContent}>
                                         <Grid container direction="column" spacing={0}>
                                             <Grid item className={classes.flex}>
-                                                <Typography variant="h4">Good Morning,</Typography>
+                                                <Typography variant="h4">Welcome Back ,</Typography>
                                                 <Typography component="span" variant="h4" className={classes.name}>
-                                                    John
+                                                    {userData.firstName}
                                                 </Typography>
                                             </Grid>
                                             <Grid item>
-                                                <Typography variant="subtitle2">Project Admin</Typography>
+                                                <Typography variant="subtitle2">{userData.type}</Typography>
                                             </Grid>
                                         </Grid>
                                         <OutlinedInput
@@ -229,7 +277,19 @@ const ProfileSection = () => {
                                         />
                                         <Divider />
                                         <PerfectScrollbar className={classes.ScrollHeight}>
-                                            <UpgradePlanCard />
+                                            <List component="nav" className={classes.navContainer}>
+                                                <ListItemButton
+                                                    className={classes.listItem}
+                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                    selected={selectedIndex === 4}
+                                                    onClick={handleAccount}
+                                                >
+                                                    <ListItemIcon>
+                                                        <IconUser stroke={1.5} size="1.3rem" />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={<Typography variant="body2">Account</Typography>} />
+                                                </ListItemButton>
+                                            </List>
                                             <Divider />
                                             <Card className={classes.card}>
                                                 <CardContent>
