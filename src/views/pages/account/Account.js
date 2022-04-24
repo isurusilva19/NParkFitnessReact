@@ -217,6 +217,8 @@ const Account = () => {
     const classes = useStyles();
     theme = useTheme();
     const [open, setOpen] = React.useState(false);
+    const [open2, setOpen2] = React.useState(false);
+    const [open3, setOpen3] = React.useState(false);
     const [strength, setStrength] = React.useState(0);
     const [level, setLevel] = React.useState();
     const [showNewPassword, setShowNewPassword] = React.useState(false);
@@ -252,8 +254,18 @@ const Account = () => {
         setOpen(true);
     };
 
+    const handleClickOpen2 = () => {
+        setOpen2(true);
+    };
+
+    const handleClickOpen3 = () => {
+        setOpen3(true);
+    };
+
     const handleClose = () => {
         setOpen(false);
+        setOpen2(false);
+        setOpen3(false);
     };
 
     const handleChange = (prop) => (event) => {
@@ -264,6 +276,11 @@ const Account = () => {
         inputFile.current.click();
     };
 
+    const gotoSignIn = () => {
+        localStorage.clear();
+        navigate('/');
+    };
+
     function getUserDetails(userId) {
         const auth = getAuth();
         const user = auth.currentUser;
@@ -271,85 +288,87 @@ const Account = () => {
             // const displayName = user.displayName;
             // const email = user.email;
             console.log(user.email);
+            HttpCommon.get(`/api/user/${userId}`).then((response) => {
+                console.log(response.data.data);
+                setValues({
+                    firstName: response.data.data.firstName,
+                    lastName: response.data.data.lastName,
+                    birthDay: response.data.data.birthDay,
+                    contactNo: response.data.data.contactNo,
+                    gender: response.data.data.gender,
+                    email: user.email,
+                    height: response.data.data.height,
+                    image: response.data.data.image,
+                    street: response.data.data.street,
+                    lane: response.data.data.lane,
+                    city: response.data.data.city,
+                    province: response.data.data.province,
+                    type: response.data.data.type
+                });
+                setDataLoading(false);
+            });
+
             // const photoURL = user.photoURL;
             // const emailVerified = user.emailVerified;
+        } else {
+            navigate('/', { replace: true });
         }
-        HttpCommon.get(`/api/user/${userId}`).then((response) => {
-            console.log(response.data.data);
-            setValues({
-                firstName: response.data.data.firstName,
-                lastName: response.data.data.lastName,
-                birthDay: response.data.data.birthDay,
-                contactNo: response.data.data.contactNo,
-                gender: response.data.data.gender,
-                email: user.email,
-                height: response.data.data.height,
-                image: response.data.data.image,
-                street: response.data.data.street,
-                lane: response.data.data.lane,
-                city: response.data.data.city,
-                province: response.data.data.province,
-                type: response.data.data.type
-            });
-            setDataLoading(false);
-        });
     }
 
     function changeFirebaseEmail() {
         const auth = getAuth();
         const user = auth.currentUser;
-        const credential = promptForCredentials();
 
-        reauthenticateWithCredential(user, credential)
+        updateEmail(auth.currentUser, values.email)
             .then(() => {
-                // User re-authenticated.
-                updateEmail(auth.currentUser, values.email)
-                    .then(() => {
-                        // Email updated!
-                        Store.addNotification({
-                            title: 'Email Changed!',
-                            message: 'User Account Email Changed',
-                            type: 'success',
-                            insert: 'top',
-                            container: 'top-right',
-                            animationIn: ['animate__animated', 'animate__fadeIn'],
-                            animationOut: ['animate__animated', 'animate__fadeOut'],
-                            dismiss: {
-                                duration: 5000,
-                                onScreen: true
-                            },
-                            width: 500
-                        });
-                    })
-                    .catch((error) => {
-                        // An error occurred
-                        Store.addNotification({
-                            title: 'Email Changed Failed!',
-                            message: error.message,
-                            type: 'danger',
-                            insert: 'top',
-                            container: 'top-right',
-                            animationIn: ['animate__animated', 'animate__fadeIn'],
-                            animationOut: ['animate__animated', 'animate__fadeOut'],
-                            dismiss: {
-                                duration: 5000,
-                                onScreen: true
-                            },
-                            width: 500
-                        });
-                    });
+                // Email updated!
+                setOpen2(false);
+                Store.addNotification({
+                    title: 'Email Changed!',
+                    message: 'User Account Email Changed',
+                    type: 'success',
+                    insert: 'top',
+                    container: 'top-right',
+                    animationIn: ['animate__animated', 'animate__fadeIn'],
+                    animationOut: ['animate__animated', 'animate__fadeOut'],
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true
+                    },
+                    width: 500
+                });
             })
             .catch((error) => {
-                // An error ocurred
-                // ...
+                // An error occurred
+                setOpen2(false);
+                console.log(error);
+                console.log(error.message);
+                console.log(error.code);
+                Store.addNotification({
+                    title: 'Email Changed Failed!',
+                    message: error.message,
+                    type: 'danger',
+                    insert: 'top',
+                    container: 'top-right',
+                    animationIn: ['animate__animated', 'animate__fadeIn'],
+                    animationOut: ['animate__animated', 'animate__fadeOut'],
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true
+                    },
+                    width: 500
+                });
+                if (error.code === 'auth/requires-recent-login') {
+                    setOpen3(true);
+                }
             });
     }
 
     function saveProfileDetails() {
         // let arr = [];
-        if (values.email !== undefined && values.email !== '') {
-            changeFirebaseEmail();
-        }
+        // if (values.email !== undefined && values.email !== '') {
+        //     changeFirebaseEmail();
+        // }
         if (
             values.firstName !== undefined &&
             values.firstName !== '' &&
@@ -636,6 +655,11 @@ const Account = () => {
                                     Change Password
                                 </Button>
                             </Grid>
+                            <Grid item sm={12} xs={12} md={6} lg={3}>
+                                <Button variant="contained" color="secondary" onClick={handleClickOpen2}>
+                                    Change Email
+                                </Button>
+                            </Grid>
                         </Grid>
                     </SubCard>
                     <div style={{ height: '20px' }} />
@@ -652,13 +676,7 @@ const Account = () => {
                                 />
                             </Grid>
                             <Grid item sm={12} xs={12} md={12} lg={6}>
-                                <TextField
-                                    fullWidth
-                                    id="outlined-name"
-                                    label="Email"
-                                    value={values.email}
-                                    onChange={handleChange('email')}
-                                />
+                                <TextField fullWidth contentEditable={false} id="outlined-name" label="Email" value={values.email} />
                             </Grid>
                             <Grid item sm={12} xs={12} md={12} lg={6}>
                                 <TextField
@@ -767,6 +785,68 @@ const Account = () => {
                         <DialogActions>
                             <Button color="secondary" onClick={changeFirebasePassword}>
                                 Change Password
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    <Dialog
+                        open={open2}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={handleClose}
+                        aria-describedby="alert-dialog-slide-description"
+                    >
+                        <DialogTitle>Change Email</DialogTitle>
+                        <DialogContent>
+                            {/* <FormControl fullWidth sx={{ ...theme.typography.passwordInput, mb: 1, mt: 1 }}>
+                                <InputLabel>Current Password</InputLabel>
+                                <OutlinedInput
+                                    type="text"
+                                    value={currentPassword}
+                                    onChange={handleChangeCurrentPassword}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={showNewPasswordHandler}
+                                                edge="end"
+                                                size="large"
+                                            >
+                                                {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                />
+                            </FormControl> */}
+
+                            <FormControl fullWidth sx={{ ...theme.typography.passwordInput, mb: 1, width: '400px' }}>
+                                <InputLabel>New Email</InputLabel>
+                                <OutlinedInput fullWidth type="text" value={values.email} onChange={handleChange('email')} />
+                            </FormControl>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button color="secondary" onClick={changeFirebaseEmail}>
+                                Change Email
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    <Dialog
+                        open={open3}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={handleClose}
+                        aria-describedby="alert-dialog-slide-description"
+                    >
+                        <DialogTitle>User Reauthentication</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText id="alert-dialog-slide-description">
+                                To do this activity user must sign in again.
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button color="secondary" onClick={gotoSignIn}>
+                                Go to SignIn
                             </Button>
                         </DialogActions>
                     </Dialog>

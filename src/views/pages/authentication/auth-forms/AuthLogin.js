@@ -200,6 +200,7 @@ const FirebaseLogin = ({ ...others }) => {
                     }
                 })
                 .catch((err) => {
+                    setDataLoading(false);
                     localStorage.clear();
                     window.location.reload();
                     Store.addNotification({
