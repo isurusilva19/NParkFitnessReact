@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 // material-ui
 import { makeStyles, useTheme, withStyles } from '@material-ui/styles';
@@ -71,6 +71,7 @@ import Slide from '@mui/material/Slide';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
+import { getAuth, updatePassword, updateEmail, reauthenticateWithCredential } from 'firebase/auth';
 //= ==============================|| SHADOW BOX ||===============================//
 let theme;
 
@@ -220,7 +221,11 @@ const Account = () => {
     const [level, setLevel] = React.useState();
     const [showNewPassword, setShowNewPassword] = React.useState(false);
 
+    const inputFile = useRef(null);
+    const [file, setFile] = React.useState('');
+
     const [isDataLoading, setDataLoading] = React.useState(true);
+    const [currentPassword, setCurrentPassword] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [confirmPassword, setConfirmPassword] = React.useState('');
     const [values, setValues] = React.useState({
@@ -255,6 +260,256 @@ const Account = () => {
         setValues({ ...values, [prop]: event.target.value });
     };
 
+    const getFile = () => {
+        inputFile.current.click();
+    };
+
+    function getUserDetails(userId) {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user !== null) {
+            // const displayName = user.displayName;
+            // const email = user.email;
+            console.log(user.email);
+            // const photoURL = user.photoURL;
+            // const emailVerified = user.emailVerified;
+        }
+        HttpCommon.get(`/api/user/${userId}`).then((response) => {
+            console.log(response.data.data);
+            setValues({
+                firstName: response.data.data.firstName,
+                lastName: response.data.data.lastName,
+                birthDay: response.data.data.birthDay,
+                contactNo: response.data.data.contactNo,
+                gender: response.data.data.gender,
+                email: user.email,
+                height: response.data.data.height,
+                image: response.data.data.image,
+                street: response.data.data.street,
+                lane: response.data.data.lane,
+                city: response.data.data.city,
+                province: response.data.data.province,
+                type: response.data.data.type
+            });
+            setDataLoading(false);
+        });
+    }
+
+    function changeFirebaseEmail() {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        const credential = promptForCredentials();
+
+        reauthenticateWithCredential(user, credential)
+            .then(() => {
+                // User re-authenticated.
+                updateEmail(auth.currentUser, values.email)
+                    .then(() => {
+                        // Email updated!
+                        Store.addNotification({
+                            title: 'Email Changed!',
+                            message: 'User Account Email Changed',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-right',
+                            animationIn: ['animate__animated', 'animate__fadeIn'],
+                            animationOut: ['animate__animated', 'animate__fadeOut'],
+                            dismiss: {
+                                duration: 5000,
+                                onScreen: true
+                            },
+                            width: 500
+                        });
+                    })
+                    .catch((error) => {
+                        // An error occurred
+                        Store.addNotification({
+                            title: 'Email Changed Failed!',
+                            message: error.message,
+                            type: 'danger',
+                            insert: 'top',
+                            container: 'top-right',
+                            animationIn: ['animate__animated', 'animate__fadeIn'],
+                            animationOut: ['animate__animated', 'animate__fadeOut'],
+                            dismiss: {
+                                duration: 5000,
+                                onScreen: true
+                            },
+                            width: 500
+                        });
+                    });
+            })
+            .catch((error) => {
+                // An error ocurred
+                // ...
+            });
+    }
+
+    function saveProfileDetails() {
+        // let arr = [];
+        if (values.email !== undefined && values.email !== '') {
+            changeFirebaseEmail();
+        }
+        if (
+            values.firstName !== undefined &&
+            values.firstName !== '' &&
+            values.lastName !== undefined &&
+            values.lastName !== '' &&
+            values.birthDay !== undefined &&
+            values.birthDay !== '' &&
+            values.gender !== undefined &&
+            values.gender !== '' &&
+            values.type !== undefined &&
+            values.type !== '' &&
+            values.email !== undefined &&
+            values.email !== '' &&
+            values.contactNo !== undefined &&
+            values.contactNo !== '' &&
+            values.street !== undefined &&
+            values.street !== '' &&
+            values.city !== undefined &&
+            values.city !== '' &&
+            values.province !== undefined &&
+            values.province !== ''
+        ) {
+            HttpCommon.put(`/api/user/${userId}`, {
+                firstName: values.firstName,
+                lastName: values.lastName,
+                birthDay: values.birthDay,
+                email: values.email,
+                contactNo: values.contactNo,
+                gender: values.gender,
+                type: values.type,
+                street: values.street,
+                lane: values.lane,
+                city: values.city,
+                province: values.province
+            }).then((response) => {
+                console.log(response.data.data);
+                if (response.data.success) {
+                    Store.addNotification({
+                        title: 'Saved!',
+                        message: 'Profile Details Saved Successfully',
+                        type: 'success',
+                        insert: 'top',
+                        container: 'top-right',
+                        animationIn: ['animate__animated', 'animate__fadeIn'],
+                        animationOut: ['animate__animated', 'animate__fadeOut'],
+                        dismiss: {
+                            duration: 5000,
+                            onScreen: true
+                        },
+                        width: 500
+                    });
+                }
+                setDataLoading(true);
+                const key = localStorage.getItem('userID');
+                getUserDetails(key);
+            });
+        } else {
+            Store.addNotification({
+                title: 'Error!',
+                message: 'Enter all required fields',
+                type: 'danger',
+                insert: 'top',
+                container: 'top-right',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                    onScreen: true
+                },
+                width: 500
+            });
+        }
+    }
+
+    function uploadProfileImage(file) {
+        // let arr = [];
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('userId', userId);
+        HttpCommon.post(`/api/user/upload`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then((response) => {
+            console.log(response.data.data);
+            if (response.data.success) {
+                Store.addNotification({
+                    title: 'Uploaded!',
+                    message: 'Profile Image Uploaded',
+                    type: 'success',
+                    insert: 'top',
+                    container: 'top-right',
+                    animationIn: ['animate__animated', 'animate__fadeIn'],
+                    animationOut: ['animate__animated', 'animate__fadeOut'],
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true
+                    },
+                    width: 500
+                });
+            }
+            setDataLoading(true);
+            const key = localStorage.getItem('userID');
+            getUserDetails(key);
+        });
+    }
+
+    function changeFirebasePassword() {
+        const auth = getAuth();
+
+        const user = auth.currentUser;
+        const newPassword = password;
+
+        if (password === confirmPassword) {
+            updatePassword(user, newPassword)
+                .then(() => {
+                    // Update successful.
+                    Store.addNotification({
+                        title: 'Password Changed!',
+                        message: 'User Account Password Changed',
+                        type: 'success',
+                        insert: 'top',
+                        container: 'top-right',
+                        animationIn: ['animate__animated', 'animate__fadeIn'],
+                        animationOut: ['animate__animated', 'animate__fadeOut'],
+                        dismiss: {
+                            duration: 5000,
+                            onScreen: true
+                        },
+                        width: 500
+                    });
+                    setOpen(false);
+                })
+                .catch((error) => {
+                    // An error ocurred
+                    Store.addNotification({
+                        title: 'Password Changed Failed!',
+                        message: error.message,
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-right',
+                        animationIn: ['animate__animated', 'animate__fadeIn'],
+                        animationOut: ['animate__animated', 'animate__fadeOut'],
+                        dismiss: {
+                            duration: 5000,
+                            onScreen: true
+                        },
+                        width: 500
+                    });
+                    setOpen(false);
+                });
+        }
+    }
+
+    const onChangeFile = (event) => {
+        console.log(event.target.files[0]);
+        setFile(event.target.files[0]);
+        uploadProfileImage(event.target.files[0]);
+    };
+
     const handleChangePassword = (event) => {
         console.log(event.target.value);
         setPassword(event.target.value);
@@ -268,46 +523,14 @@ const Account = () => {
         setConfirmPassword(event.target.value);
     };
 
+    const handleChangeCurrentPassword = (event) => {
+        console.log(event.target.value);
+        setCurrentPassword(event.target.value);
+    };
+
     const showNewPasswordHandler = () => {
         setShowNewPassword(!showNewPassword);
     };
-    function getUserDetails(userId) {
-        // let arr = [];
-        HttpCommon.get(`/api/user/${userId}`).then((response) => {
-            console.log(response.data.data);
-            setValues({
-                firstName: response.data.data.firstName,
-                lastName: response.data.data.lastName,
-                birthDay: response.data.data.birthDay,
-                contactNo: response.data.data.contactNo,
-                email: response.data.data.email,
-                gender: response.data.data.gender,
-                height: response.data.data.height,
-                image: response.data.data.image,
-                street: response.data.data.street,
-                lane: response.data.data.lane,
-                city: response.data.data.city,
-                province: response.data.data.province,
-                type: response.data.data.type
-            });
-            setDataLoading(false);
-        });
-    }
-
-    // Store.addNotification({
-    //     title: 'Error Occured!',
-    //     message: error.message,
-    //     type: 'danger',
-    //     insert: 'top',
-    //     container: 'top-right',
-    //     animationIn: ['animate__animated', 'animate__fadeIn'],
-    //     animationOut: ['animate__animated', 'animate__fadeOut'],
-    //     dismiss: {
-    //         duration: 5000,
-    //         onScreen: true
-    //     },
-    //     width: 500
-    // });
 
     useEffect(async () => {
         setDataLoading(true);
@@ -339,7 +562,14 @@ const Account = () => {
                                     <ShadowBox name={values.firstName.charAt(0) + values.lastName.charAt(0)} image={values.image} />
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Button variant="contained" color="secondary" startIcon={<CameraAltIcon />}>
+                                    {/* <Button variant="contained" color="secondary" startIcon={<CameraAltIcon />}>
+                                        Edit Image
+                                    </Button> */}
+                                    {/* <Uploady>
+                                        <MyComponent />
+                                    </Uploady> */}
+                                    <input type="file" id="file" ref={inputFile} style={{ display: 'none' }} onChange={onChangeFile} />
+                                    <Button variant="contained" color="secondary" startIcon={<CameraAltIcon />} onClick={() => getFile()}>
                                         Edit Image
                                     </Button>
                                 </div>
@@ -362,21 +592,8 @@ const Account = () => {
                                     onChange={handleChange('lastName')}
                                 />
                             </Grid>
-                            <Grid item sm={12} xs={12} md={6} lg={4}>
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                    <DesktopDatePicker
-                                        label="Birth Date"
-                                        inputFormat="MM/dd/yyyy"
-                                        value={values.birthDay}
-                                        sx={{ width: 600 }}
-                                        onChange={(newValue) => {
-                                            setValues({ ...values, birthDay: newValue.toISOString().substring(0, 10) });
-                                        }}
-                                        renderInput={(params) => <TextField {...params} />}
-                                    />
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item sm={12} xs={12} md={6} lg={4}>
+
+                            <Grid item sm={12} xs={12} md={6} lg={6}>
                                 <FormControl fullWidth>
                                     <InputLabel id="demo-simple-select-label">Gender</InputLabel>
                                     <Select
@@ -391,15 +608,19 @@ const Account = () => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            <Grid item sm={12} xs={12} md={6} lg={4}>
-                                <TextField
-                                    fullWidth
-                                    type="number"
-                                    id="outlined-name"
-                                    label="Height (cm)"
-                                    value={values.height}
-                                    onChange={handleChange('height')}
-                                />
+                            <Grid item sm={12} xs={12} md={6} lg={6}>
+                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DesktopDatePicker
+                                        label="Birth Date"
+                                        inputFormat="MM/dd/yyyy"
+                                        value={values.birthDay}
+                                        sx={{ width: 600 }}
+                                        onChange={(newValue) => {
+                                            setValues({ ...values, birthDay: newValue.toISOString().substring(0, 10) });
+                                        }}
+                                        renderInput={(params) => <TextField {...params} />}
+                                    />
+                                </LocalizationProvider>
                             </Grid>
                         </Grid>
                     </SubCard>
@@ -410,7 +631,7 @@ const Account = () => {
                             <Grid item sm={12} xs={12} md={6} lg={6}>
                                 <TextField contentEditable={false} fullWidth id="outlined-name" label="Type" value={values.type} />
                             </Grid>
-                            <Grid item sm={12} xs={12} md={6} lg={6}>
+                            <Grid item sm={12} xs={12} md={6} lg={3}>
                                 <Button variant="contained" color="secondary" onClick={handleClickOpen}>
                                     Change Password
                                 </Button>
@@ -467,7 +688,7 @@ const Account = () => {
                     </SubCard>
                     <div style={{ height: '20px' }} />
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <Button variant="contained" color="secondary">
+                        <Button variant="contained" color="secondary" onClick={saveProfileDetails}>
                             Save Changes
                         </Button>
                     </div>
@@ -483,7 +704,7 @@ const Account = () => {
                         <DialogTitle>Enter New Password</DialogTitle>
                         <DialogContent>
                             <FormControl fullWidth sx={{ ...theme.typography.passwordInput, mb: 1, mt: 1 }}>
-                                <InputLabel>Password</InputLabel>
+                                <InputLabel>New Password</InputLabel>
                                 <OutlinedInput
                                     type={showNewPassword ? 'text' : 'password'}
                                     value={password}
@@ -523,7 +744,7 @@ const Account = () => {
                                 </FormControl>
                             )}
                             <FormControl fullWidth sx={{ ...theme.typography.passwordInput, mb: 1 }}>
-                                <InputLabel>Confirm Password</InputLabel>
+                                <InputLabel>Confirm New Password</InputLabel>
                                 <OutlinedInput
                                     type={showNewPassword ? 'text' : 'password'}
                                     value={confirmPassword}
@@ -544,7 +765,7 @@ const Account = () => {
                             </FormControl>
                         </DialogContent>
                         <DialogActions>
-                            <Button color="secondary" onClick={handleClose}>
+                            <Button color="secondary" onClick={changeFirebasePassword}>
                                 Change Password
                             </Button>
                         </DialogActions>
