@@ -318,50 +318,90 @@ const Account = () => {
     function changeFirebaseEmail() {
         const auth = getAuth();
         const user = auth.currentUser;
-
-        updateEmail(auth.currentUser, values.email)
-            .then(() => {
-                // Email updated!
-                setOpen2(false);
-                Store.addNotification({
-                    title: 'Email Changed!',
-                    message: 'User Account Email Changed',
-                    type: 'success',
-                    insert: 'top',
-                    container: 'top-right',
-                    animationIn: ['animate__animated', 'animate__fadeIn'],
-                    animationOut: ['animate__animated', 'animate__fadeOut'],
-                    dismiss: {
-                        duration: 5000,
-                        onScreen: true
-                    },
-                    width: 500
+        if (values.email !== undefined && values.email !== '') {
+            updateEmail(auth.currentUser, values.email)
+                .then(() => {
+                    // Email updated!
+                    setOpen2(false);
+                    HttpCommon.put(`/api/user/${userId}`, {
+                        email: values.email
+                    }).then((response) => {
+                        console.log(response.data.data);
+                        Store.addNotification({
+                            title: 'Email Changed!',
+                            message: 'User Account Email Changed',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-right',
+                            animationIn: ['animate__animated', 'animate__fadeIn'],
+                            animationOut: ['animate__animated', 'animate__fadeOut'],
+                            dismiss: {
+                                duration: 5000,
+                                onScreen: true
+                            },
+                            width: 500
+                        });
+                        if (response.data.success) {
+                            Store.addNotification({
+                                title: 'Saved!',
+                                message: 'Profile Details Saved Successfully',
+                                type: 'success',
+                                insert: 'top',
+                                container: 'top-right',
+                                animationIn: ['animate__animated', 'animate__fadeIn'],
+                                animationOut: ['animate__animated', 'animate__fadeOut'],
+                                dismiss: {
+                                    duration: 5000,
+                                    onScreen: true
+                                },
+                                width: 500
+                            });
+                        }
+                        setDataLoading(true);
+                        const key = localStorage.getItem('userID');
+                        getUserDetails(key);
+                    });
+                })
+                .catch((error) => {
+                    // An error occurred
+                    setOpen2(false);
+                    console.log(error);
+                    console.log(error.message);
+                    console.log(error.code);
+                    Store.addNotification({
+                        title: 'Email Changed Failed!',
+                        message: error.message,
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-right',
+                        animationIn: ['animate__animated', 'animate__fadeIn'],
+                        animationOut: ['animate__animated', 'animate__fadeOut'],
+                        dismiss: {
+                            duration: 5000,
+                            onScreen: true
+                        },
+                        width: 500
+                    });
+                    if (error.code === 'auth/requires-recent-login') {
+                        setOpen3(true);
+                    }
                 });
-            })
-            .catch((error) => {
-                // An error occurred
-                setOpen2(false);
-                console.log(error);
-                console.log(error.message);
-                console.log(error.code);
-                Store.addNotification({
-                    title: 'Email Changed Failed!',
-                    message: error.message,
-                    type: 'danger',
-                    insert: 'top',
-                    container: 'top-right',
-                    animationIn: ['animate__animated', 'animate__fadeIn'],
-                    animationOut: ['animate__animated', 'animate__fadeOut'],
-                    dismiss: {
-                        duration: 5000,
-                        onScreen: true
-                    },
-                    width: 500
-                });
-                if (error.code === 'auth/requires-recent-login') {
-                    setOpen3(true);
-                }
+        } else {
+            Store.addNotification({
+                title: 'Error!',
+                message: 'Enter all required fields',
+                type: 'danger',
+                insert: 'top',
+                container: 'top-right',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                    onScreen: true
+                },
+                width: 500
             });
+        }
     }
 
     function saveProfileDetails() {
