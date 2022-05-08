@@ -163,6 +163,14 @@ const pages = {
             url: '/pages/employeeManagement',
             icon: IconUsers,
             breadcrumbs: false
+        },
+        {
+            id: 'attendance',
+            title: 'Attendance',
+            type: 'item',
+            url: '/pages/attendance',
+            icon: IconUsers,
+            breadcrumbs: false
         }
     ]
 };

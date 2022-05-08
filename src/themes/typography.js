@@ -82,6 +82,27 @@ export default function themeTypography(theme) {
                 top: 0
             }
         },
+        passwordInput: {
+            marginTop: 0,
+            marginBottom: 8,
+            '& > label': {
+                top: '25px',
+                left: 0,
+                color: theme.grey500,
+                '&[data-shrink="false"]': {
+                    top: '5px'
+                }
+            },
+            '& > div > input': {
+                padding: '30.5px 14px 11.5px !important'
+            },
+            '& legend': {
+                display: 'none'
+            },
+            '& fieldset': {
+                top: 0
+            }
+        },
         mainContent: {
             backgroundColor: theme.background,
             width: '100%',

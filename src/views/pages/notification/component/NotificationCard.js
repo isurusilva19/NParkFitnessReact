@@ -125,7 +125,9 @@ const ShadowBox = () => {
             return <StorefrontTwoToneIcon stroke={1.5} size="1.3rem" />;
 
         default:
-            return <CardMedia component="img" image="https://npark-fitness-bucket.s3.us-east-2.amazonaws.com/dp.jpg" alt="green iguana" />;
+            return (
+                <CardMedia component="img" image="https://npark-fitness-bucket-2.s3.us-east-2.amazonaws.com/dp.jpg" alt="green iguana" />
+            );
         // code block
     }
 };

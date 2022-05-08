@@ -19,6 +19,8 @@ const MemberReport = Loadable(lazy(() => import('views/pages/reports/member-repo
 const Services = Loadable(lazy(() => import('views/pages/services/Services')));
 const SubscriptionTypes = Loadable(lazy(() => import('views/pages/subscriptionType/SubscriptionType')));
 const EmployeeManagement = Loadable(lazy(() => import('views/pages/employee-management/EmployeeManagement')));
+const Attendance = Loadable(lazy(() => import('views/pages/attendance/Attendance')));
+const Account = Loadable(lazy(() => import('views/pages/account/Account')));
 
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
@@ -93,6 +95,14 @@ const MainRoutes = {
         {
             path: '/employeeManagement',
             element: <EmployeeManagement />
+        },
+        {
+            path: '/attendance',
+            element: <Attendance />
+        },
+        {
+            path: '/account',
+            element: <Account />
         },
         {
             path: '/utils/util-typography',
